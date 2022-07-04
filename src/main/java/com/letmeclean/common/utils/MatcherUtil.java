@@ -1,4 +1,4 @@
-package com.letmeclean.utils;
+package com.letmeclean.common.utils;
 
 import java.util.regex.Pattern;
 

@@ -1,10 +1,8 @@
 package com.letmeclean.service;
 
-import com.letmeclean.controller.dto.request.member.MemberRequest.SignUpRequestDto;
-import com.letmeclean.controller.dto.response.member.MemberResponse.SignUpResponseDto;
+import com.letmeclean.controller.dto.member.MemberRequest.SignUpRequestDto;
 import com.letmeclean.domain.member.Member;
 import com.letmeclean.domain.member.MemberRepository;
-import com.letmeclean.domain.member.MemberStatus;
 import com.letmeclean.exception.member.DuplicatedEmailException;
 import com.letmeclean.exception.member.DuplicatedNicknameException;
 import com.letmeclean.service.encryption.PasswordEncoder;
@@ -47,16 +45,6 @@ class MemberServiceTest {
                 .build();
     }
 
-    private SignUpResponseDto createSignUpResponseDto() {
-        return SignUpResponseDto.builder()
-                .email("23Yong@test.com")
-                .username("홍길동")
-                .nickname("ImGilDong")
-                .tel("010-1234-1234")
-                .status(MemberStatus.DEFAULT)
-                .build();
-    }
-
     @BeforeEach
     void setUp() {
         member = Member.builder()
@@ -73,7 +61,6 @@ class MemberServiceTest {
     void signUpSuccess() {
         // given
         SignUpRequestDto signUpRequestDto = createSignUpRequestDto();
-        SignUpResponseDto signUpResponseDto = createSignUpResponseDto();
         String prevPassword = signUpRequestDto.getPassword();
 
         given(memberRepository.save(any(Member.class)))
@@ -82,7 +69,7 @@ class MemberServiceTest {
                 .willReturn(hashedPassword);
 
         // when
-        SignUpResponseDto result = memberService.signUp(signUpRequestDto);
+        memberService.signUp(signUpRequestDto);
 
         // then
         then(memberRepository).should().existsByEmail(signUpRequestDto.getEmail());
@@ -91,11 +78,6 @@ class MemberServiceTest {
         then(passwordEncoder).should().encrypt(prevPassword);
 
         assertThat(signUpRequestDto.getPassword()).isEqualTo(hashedPassword);
-        assertThat(result.getEmail()).isEqualTo(signUpResponseDto.getEmail());
-        assertThat(result.getUsername()).isEqualTo(signUpResponseDto.getUsername());
-        assertThat(result.getNickname()).isEqualTo(signUpResponseDto.getNickname());
-        assertThat(result.getTel()).isEqualTo(signUpResponseDto.getTel());
-        assertThat(result.getStatus()).isEqualTo(signUpResponseDto.getStatus());
     }
 
     @DisplayName("중복된 이메일로 인해 회원가입에 실패한다.")

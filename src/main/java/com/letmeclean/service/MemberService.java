@@ -2,18 +2,16 @@ package com.letmeclean.service;
 
 import com.letmeclean.domain.member.Member;
 import com.letmeclean.domain.member.MemberRepository;
-import com.letmeclean.controller.dto.request.member.MemberRequest.SignUpRequestDto;
+import com.letmeclean.controller.dto.member.MemberRequest.SignUpRequestDto;
 import com.letmeclean.exception.member.DuplicatedEmailException;
 import com.letmeclean.exception.member.DuplicatedNicknameException;
 import com.letmeclean.exception.member.InvalidPasswordException;
 import com.letmeclean.exception.member.NotMatchPasswordException;
 import com.letmeclean.service.encryption.PasswordEncoder;
-import com.letmeclean.utils.MatcherUtil;
+import com.letmeclean.common.utils.MatcherUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.letmeclean.controller.dto.response.member.MemberResponse.*;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -40,25 +38,23 @@ public class MemberService {
     }
 
     @Transactional
-    public SignUpResponseDto signUp(SignUpRequestDto signUpRequestDto) {
+    public void signUp(SignUpRequestDto signUpRequestDto) {
         if (checkEmailDuplicated(signUpRequestDto.getEmail())) {
-            throw new DuplicatedEmailException();
+            throw DuplicatedEmailException.getInstance();
         }
         if (checkNicknameDuplicated(signUpRequestDto.getNickname())) {
-            throw new DuplicatedNicknameException();
+            throw DuplicatedNicknameException.getInstance();
         }
         if (!isValidPassword(signUpRequestDto.getPassword())) {
-            throw new InvalidPasswordException();
+            throw InvalidPasswordException.getInstance();
         }
         if (checkConfirmPassword(signUpRequestDto.getPassword(), signUpRequestDto.getConfirmPassword())) {
-            throw new NotMatchPasswordException();
+            throw NotMatchPasswordException.getInstance();
         }
 
         signUpRequestDto.setPassword(passwordEncoder.encrypt(signUpRequestDto.getPassword()));
 
         Member member = signUpRequestDto.toEntity();
-        Member savedMember = memberRepository.save(member);
-
-        return new SignUpResponseDto(savedMember);
+        memberRepository.save(member);
     }
 }

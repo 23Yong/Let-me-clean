@@ -1,4 +1,4 @@
-package com.letmeclean.controller.dto.request.member;
+package com.letmeclean.controller.dto.member;
 
 import com.letmeclean.domain.member.Member;
 import lombok.*;
