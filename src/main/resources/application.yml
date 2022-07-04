@@ -1,11 +1,14 @@
-database: h2
-
 spring:
+  config:
+    activate:
+      on-profile: "real"
+    import: application-secret.yml
+
   datasource:
-    url: jdbc:h2:tcp://localhost/~/letmeclean
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: ${datasource.url}
+    username: ${datasource.username}
+    password: ${datasource.password}
+    driver-class-name: ${datasource.driver}
 
   jpa:
     show-sql: true

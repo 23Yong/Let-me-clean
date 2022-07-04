@@ -8,11 +8,10 @@ import com.letmeclean.exception.member.DuplicatedNicknameException;
 import com.letmeclean.exception.member.InvalidPasswordException;
 import com.letmeclean.exception.member.NotMatchPasswordException;
 import com.letmeclean.service.encryption.PasswordEncoder;
+import com.letmeclean.utils.MatcherUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.regex.Pattern;
 
 import static com.letmeclean.controller.dto.response.member.MemberResponse.*;
 
@@ -24,13 +23,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private static final int MIN = 8;
-    private static final int MAX = 20;
-    private static final String REGEX =
-            "^((?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W]).{" + MIN + "," + MAX + "})$";
-
-    private Pattern pattern = Pattern.compile(REGEX);
-
     private boolean checkEmailDuplicated(String email) {
         return memberRepository.existsByEmail(email);
     }
@@ -40,11 +32,11 @@ public class MemberService {
     }
 
     private boolean isValidPassword(String password) {
-        return pattern.matcher(password).find() ? true : false;
+        return MatcherUtil.isMatch(password);
     }
 
     private boolean checkConfirmPassword(String password, String confirmPassword) {
-        return password.equals(confirmPassword) ? false : true;
+        return !password.equals(confirmPassword);
     }
 
     @Transactional
