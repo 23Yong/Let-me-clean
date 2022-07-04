@@ -1,0 +1,23 @@
+spring:
+  config:
+    activate:
+      on-profile: "local"
+    import: application-secret.yml
+
+  datasource:
+    url: ${datasource.url}
+    username: ${datasource.username}
+    password:
+    driver-class-name: ${datasource.driver}
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    org.springframework.web: debug
