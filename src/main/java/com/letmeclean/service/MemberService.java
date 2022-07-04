@@ -1,6 +1,5 @@
 package com.letmeclean.service;
 
-import com.letmeclean.controller.dto.response.member.MemberResponse;
 import com.letmeclean.domain.member.Member;
 import com.letmeclean.domain.member.MemberRepository;
 import com.letmeclean.controller.dto.request.member.MemberRequest.SignUpRequestDto;
@@ -8,13 +7,11 @@ import com.letmeclean.exception.member.DuplicatedEmailException;
 import com.letmeclean.exception.member.DuplicatedNicknameException;
 import com.letmeclean.exception.member.InvalidPasswordException;
 import com.letmeclean.exception.member.NotMatchPasswordException;
-import com.letmeclean.service.converter.SignUpDtoConverter;
 import com.letmeclean.service.encryption.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.letmeclean.controller.dto.response.member.MemberResponse.*;
@@ -25,8 +22,14 @@ import static com.letmeclean.controller.dto.response.member.MemberResponse.*;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final SignUpDtoConverter signUpDtoConverter;
     private final PasswordEncoder passwordEncoder;
+
+    private static final int MIN = 8;
+    private static final int MAX = 20;
+    private static final String REGEX =
+            "^((?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W]).{" + MIN + "," + MAX + "})$";
+
+    private Pattern pattern = Pattern.compile(REGEX);
 
     private boolean checkEmailDuplicated(String email) {
         return memberRepository.existsByEmail(email);
@@ -37,16 +40,7 @@ public class MemberService {
     }
 
     private boolean isValidPassword(String password) {
-        final int MIN = 8;
-        final int MAX = 20;
-        final String REGEX =
-                "^((?=.*\\d)(?=.*[a-zA-Z])(?=.*[\\W]).{" + MIN + "," + MAX + "})$";
-
-        Matcher matcher = Pattern.compile(REGEX).matcher(password);
-        if (!matcher.find()) {
-            return false;
-        }
-        return true;
+        return pattern.matcher(password).find() ? true : false;
     }
 
     private boolean checkConfirmPassword(String password, String confirmPassword) {
@@ -68,12 +62,11 @@ public class MemberService {
             throw new NotMatchPasswordException();
         }
 
-        String hashedPassword = passwordEncoder.encrypt(signUpRequestDto.getPassword());
-        System.out.println(hashedPassword);
-        Member member = signUpDtoConverter.convertSignUpRequestToMember(signUpRequestDto, hashedPassword);
+        signUpRequestDto.setPassword(passwordEncoder.encrypt(signUpRequestDto.getPassword()));
 
+        Member member = signUpRequestDto.toEntity();
         Member savedMember = memberRepository.save(member);
 
-        return signUpDtoConverter.convertMemberToSignUpResponse(savedMember);
+        return new SignUpResponseDto(savedMember);
     }
 }

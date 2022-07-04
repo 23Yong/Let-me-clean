@@ -2,15 +2,13 @@ package com.letmeclean.service.encryption;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 @Slf4j
 public class SHA256EncryptionService implements PasswordEncoder {
 
-    private final String SHA_256 = "SHA-256";
+    private static final String SHA_256 = "SHA-256";
 
     @Override
     public String encrypt(String password) {

@@ -27,7 +27,7 @@ public class Member extends BaseTimeEntity {
     private String password;
 
     @Size(max = 45)
-    private String name;
+    private String username;
 
     @Size(max = 45)
     @Column(unique = true)
@@ -53,7 +53,7 @@ public class Member extends BaseTimeEntity {
     public Member(String email, String password, String name, String nickname, String tel) {
         this.email = email;
         this.password = password;
-        this.name = name;
+        this.username = name;
         this.nickname = nickname;
         this.tel = tel;
     }
