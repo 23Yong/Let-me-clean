@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import static com.letmeclean.common.utils.ResponseConstants.*;
+import static com.letmeclean.common.constants.ResponseConstants.*;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

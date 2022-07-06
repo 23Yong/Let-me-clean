@@ -1,6 +1,7 @@
 package com.letmeclean.domain.member;
 
 import com.letmeclean.domain.BaseTimeEntity;
+import com.letmeclean.security.roles.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,12 +50,16 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @Builder
-    public Member(String email, String password, String name, String nickname, String tel) {
+    public Member(String email, String password, String name, String nickname, String tel, Role role) {
         this.email = email;
         this.password = password;
         this.username = name;
         this.nickname = nickname;
         this.tel = tel;
+        this.role = role;
     }
 }

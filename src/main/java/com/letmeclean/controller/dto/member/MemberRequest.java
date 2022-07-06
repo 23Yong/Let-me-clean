@@ -1,6 +1,7 @@
 package com.letmeclean.controller.dto.member;
 
 import com.letmeclean.domain.member.Member;
+import com.letmeclean.security.roles.Role;
 import lombok.*;
 
 public class MemberRequest {
@@ -38,7 +39,23 @@ public class MemberRequest {
                     .name(username)
                     .nickname(nickname)
                     .tel(tel)
+                    .role(Role.ROLE_MEMBER)
                     .build();
+        }
+    }
+
+    @Setter
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class LoginRequestDto {
+
+        private String email;
+        private String password;
+
+        @Builder
+        public LoginRequestDto(String email, String password) {
+            this.email = email;
+            this.password = password;
         }
     }
 }

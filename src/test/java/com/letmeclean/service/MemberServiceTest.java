@@ -5,7 +5,6 @@ import com.letmeclean.domain.member.Member;
 import com.letmeclean.domain.member.MemberRepository;
 import com.letmeclean.exception.member.DuplicatedEmailException;
 import com.letmeclean.exception.member.DuplicatedNicknameException;
-import com.letmeclean.service.encryption.PasswordEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -65,7 +65,7 @@ class MemberServiceTest {
 
         given(memberRepository.save(any(Member.class)))
                 .willReturn(member);
-        given(passwordEncoder.encrypt(prevPassword))
+        given(passwordEncoder.encode(prevPassword))
                 .willReturn(hashedPassword);
 
         // when
@@ -75,7 +75,7 @@ class MemberServiceTest {
         then(memberRepository).should().existsByEmail(signUpRequestDto.getEmail());
         then(memberRepository).should().existsByNickname(signUpRequestDto.getNickname());
         then(memberRepository).should(times(1)).save(any(Member.class));
-        then(passwordEncoder).should().encrypt(prevPassword);
+        then(passwordEncoder).should().encode(prevPassword);
 
         assertThat(signUpRequestDto.getPassword()).isEqualTo(hashedPassword);
     }

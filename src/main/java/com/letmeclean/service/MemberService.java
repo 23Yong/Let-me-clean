@@ -7,9 +7,9 @@ import com.letmeclean.exception.member.DuplicatedEmailException;
 import com.letmeclean.exception.member.DuplicatedNicknameException;
 import com.letmeclean.exception.member.InvalidPasswordException;
 import com.letmeclean.exception.member.NotMatchPasswordException;
-import com.letmeclean.service.encryption.PasswordEncoder;
-import com.letmeclean.common.utils.MatcherUtil;
+import com.letmeclean.common.utils.MatcherUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +30,7 @@ public class MemberService {
     }
 
     private boolean isValidPassword(String password) {
-        return MatcherUtil.isMatch(password);
+        return MatcherUtils.isMatch(password);
     }
 
     private boolean checkConfirmPassword(String password, String confirmPassword) {
@@ -52,7 +52,7 @@ public class MemberService {
             throw NotMatchPasswordException.getInstance();
         }
 
-        signUpRequestDto.setPassword(passwordEncoder.encrypt(signUpRequestDto.getPassword()));
+        signUpRequestDto.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
 
         Member member = signUpRequestDto.toEntity();
         memberRepository.save(member);

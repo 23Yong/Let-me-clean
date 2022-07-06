@@ -1,4 +1,4 @@
-package com.letmeclean.common.utils;
+package com.letmeclean.common.constants;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
