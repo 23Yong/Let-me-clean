@@ -58,4 +58,17 @@ public class MemberRequest {
             this.password = password;
         }
     }
+
+    @Setter
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class LogoutRequestDto {
+
+        private String accessToken;
+
+        @Builder
+        public LogoutRequestDto(String accessToken) {
+            this.accessToken = accessToken;
+        }
+    }
 }

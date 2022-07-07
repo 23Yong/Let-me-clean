@@ -34,10 +34,10 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                    .antMatchers("/login", "/members", "/reissue").permitAll()
+                    .antMatchers("/login", "/members", "/reissue", "/members/logout").permitAll()
                     .anyRequest().authenticated()
                 .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http
                 .exceptionHandling()

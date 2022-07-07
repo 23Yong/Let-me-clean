@@ -3,6 +3,7 @@ package com.letmeclean.service;
 import com.letmeclean.controller.dto.TokenDto.TokenInfo;
 import com.letmeclean.domain.refreshtoken.RefreshToken;
 import com.letmeclean.domain.refreshtoken.RefreshTokenRepository;
+import com.letmeclean.exception.auth.InvalidTokenException;
 import com.letmeclean.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,7 +16,7 @@ import static com.letmeclean.controller.dto.member.MemberRequest.*;
 
 @RequiredArgsConstructor
 @Service
-public class LoginService {
+public class AuthService {
 
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -42,7 +43,7 @@ public class LoginService {
     @Transactional
     public TokenInfo reissue(TokenInfo tokenDto) {
         if (!tokenProvider.validateToken(tokenDto.getRefreshToken())) {
-            throw new RuntimeException("유효하지 않은 토큰입니다.");
+            throw InvalidTokenException.getInstance();
         }
 
         Authentication authentication = tokenProvider.getAuthentication(tokenDto.getAccessToken());
@@ -59,5 +60,17 @@ public class LoginService {
         refreshToken.updateValue(newToken.getRefreshToken());
 
         return newToken;
+    }
+
+    @Transactional
+    public void logout(LogoutRequestDto logoutRequestDto) {
+        String accessToken = logoutRequestDto.getAccessToken();
+        if (!tokenProvider.validateToken(accessToken)) {
+            throw InvalidTokenException.getInstance();
+        }
+
+        Authentication authentication = tokenProvider.getAuthentication(accessToken);
+
+        refreshTokenRepository.deleteById(authentication.getName());
     }
 }
