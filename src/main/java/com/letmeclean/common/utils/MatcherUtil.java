@@ -2,7 +2,7 @@ package com.letmeclean.common.utils;
 
 import java.util.regex.Pattern;
 
-public class MatcherUtils {
+public class MatcherUtil {
 
     private static final int MIN = 8;
     private static final int MAX = 20;

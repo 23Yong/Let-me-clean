@@ -5,12 +5,10 @@ import com.letmeclean.service.AuthService;
 import com.letmeclean.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import static com.letmeclean.controller.dto.TokenDto.*;
+import javax.servlet.http.HttpServletRequest;
+
 import static com.letmeclean.controller.dto.member.MemberRequest.*;
 
 @RequiredArgsConstructor
@@ -26,21 +24,19 @@ public class MemberController {
         return ResponseConstants.CREATED;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<TokenInfo> login(@RequestBody LoginRequestDto loginRequestDto) {
-        TokenInfo token = authService.login(loginRequestDto);
-        return ResponseEntity.ok(token);
+    @GetMapping("/member-emails/{email}/exists")
+    public ResponseEntity<Boolean> checkEmailDuplicated(@PathVariable String email) {
+        return ResponseEntity.ok(memberService.checkEmailDuplicated(email));
     }
 
-    @PostMapping("/reissue")
-    public ResponseEntity<TokenInfo> reissue(@RequestBody TokenInfo tokenInfoDto) {
-        TokenInfo reissueToken = authService.reissue(tokenInfoDto);
-        return ResponseEntity.ok(reissueToken);
+    @GetMapping("/member-nicknames/{nickname}/exists")
+    public ResponseEntity<Boolean> checkNicknameDuplicated(@PathVariable String nickname) {
+        return ResponseEntity.ok(memberService.checkNicknameDuplicated(nickname));
     }
 
     @GetMapping("/members/logout")
-    public ResponseEntity<Void> logout(@RequestBody LogoutRequestDto logoutRequestDto) {
-        authService.logout(logoutRequestDto);
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        authService.logout(request);
         return ResponseConstants.OK;
     }
 }

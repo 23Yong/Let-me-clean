@@ -19,8 +19,4 @@ public class ResponseConstants {
 
     public static final ResponseEntity<String> INVALID_PASSWORD =
             new ResponseEntity<>("유효한 비밀번호 형식이 아닙니다.", HttpStatus.BAD_REQUEST);
-
-    public static final ResponseEntity<String> NOT_MATCH_PASSWORD =
-            new ResponseEntity<>("원래 비밀번호와 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
-
 }

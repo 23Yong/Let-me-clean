@@ -3,7 +3,6 @@ package com.letmeclean.exception;
 import com.letmeclean.exception.member.DuplicatedEmailException;
 import com.letmeclean.exception.member.DuplicatedNicknameException;
 import com.letmeclean.exception.member.InvalidPasswordException;
-import com.letmeclean.exception.member.NotMatchPasswordException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,11 +28,5 @@ public class GlobalExceptionHandler {
     public final ResponseEntity<String> handleInvalidPasswordException(
             InvalidPasswordException ex) {
         return INVALID_PASSWORD;
-    }
-
-    @ExceptionHandler(NotMatchPasswordException.class)
-    public final ResponseEntity<String> handleNotMatchPasswordException(
-            NotMatchPasswordException ex) {
-        return NOT_MATCH_PASSWORD;
     }
 }

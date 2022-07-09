@@ -1,12 +1,13 @@
 package com.letmeclean.security.filter;
 
-import com.letmeclean.common.utils.JwtUtils;
+import com.letmeclean.common.utils.JwtUtil;
+import com.letmeclean.controller.dto.TokenDto;
+import com.letmeclean.controller.dto.TokenDto.TokenInfo;
 import com.letmeclean.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
-import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -22,11 +23,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = JwtUtils.resolveToken(request);
+        TokenInfo tokenInfo = JwtUtil.resolveToken(request);
 
-        if (jwt != null && tokenProvider.validateToken(jwt)) {
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
+        String accessToken = tokenInfo.getAccessToken();
+        String refreshToken = tokenInfo.getRefreshToken();
+
+        if (accessToken != null && tokenProvider.validateToken(accessToken)) {
+            Authentication authentication = tokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
+        if (refreshToken != null && tokenProvider.validateToken(refreshToken)) {
+            Authentication authentication = tokenProvider.getAuthentication(accessToken);
+            TokenInfo reissueTokenInfo = tokenProvider.createToken(authentication);
+            response.setHeader(HttpHeaders.AUTHORIZATION, reissueTokenInfo.getAccessToken());
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            return;
         }
 
         filterChain.doFilter(request, response);

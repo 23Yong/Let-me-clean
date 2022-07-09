@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import java.util.Date;
 
 @Getter
 @NoArgsConstructor
@@ -14,12 +13,12 @@ import java.util.Date;
 public class RefreshToken {
 
     @Id
-    private String key;
+    private Long key;
 
     private String value;
 
     @Builder
-    public RefreshToken(String key, String value) {
+    public RefreshToken(Long key, String value) {
         this.key = key;
         this.value = value;
     }

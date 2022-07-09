@@ -6,8 +6,7 @@ import com.letmeclean.controller.dto.member.MemberRequest.SignUpRequestDto;
 import com.letmeclean.exception.member.DuplicatedEmailException;
 import com.letmeclean.exception.member.DuplicatedNicknameException;
 import com.letmeclean.exception.member.InvalidPasswordException;
-import com.letmeclean.exception.member.NotMatchPasswordException;
-import com.letmeclean.common.utils.MatcherUtils;
+import com.letmeclean.common.utils.MatcherUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,20 +20,16 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    private boolean checkEmailDuplicated(String email) {
+    private boolean isValidPassword(String password) {
+        return MatcherUtil.isMatch(password);
+    }
+
+    public boolean checkEmailDuplicated(String email) {
         return memberRepository.existsByEmail(email);
     }
 
-    private boolean checkNicknameDuplicated(String nickname) {
+    public boolean checkNicknameDuplicated(String nickname) {
         return memberRepository.existsByNickname(nickname);
-    }
-
-    private boolean isValidPassword(String password) {
-        return MatcherUtils.isMatch(password);
-    }
-
-    private boolean checkConfirmPassword(String password, String confirmPassword) {
-        return !password.equals(confirmPassword);
     }
 
     @Transactional
@@ -47,9 +42,6 @@ public class MemberService {
         }
         if (!isValidPassword(signUpRequestDto.getPassword())) {
             throw InvalidPasswordException.getInstance();
-        }
-        if (checkConfirmPassword(signUpRequestDto.getPassword(), signUpRequestDto.getConfirmPassword())) {
-            throw NotMatchPasswordException.getInstance();
         }
 
         signUpRequestDto.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));

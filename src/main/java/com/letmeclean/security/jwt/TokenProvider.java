@@ -1,6 +1,7 @@
 package com.letmeclean.security.jwt;
 
 import com.letmeclean.controller.dto.TokenDto.TokenInfo;
+import com.letmeclean.exception.auth.InvalidTokenException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.SecurityException;
@@ -12,7 +13,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +26,6 @@ import static java.util.stream.Collectors.*;
 public class TokenProvider {
 
     private static final String AUTHORITY_KEY = "auth";
-    private static final String BEARER_TYPE = "bearer";
 
     private final long accessTokenExpireTime;
     private final long refreshTokenExpireTime;
@@ -66,10 +65,8 @@ public class TokenProvider {
                 .compact();
 
         return TokenInfo.builder()
-                .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .accessTokenExpiredTime(Date.from(now().plusMillis(accessTokenExpireTime)).getTime())
                 .build();
     }
 
@@ -77,7 +74,7 @@ public class TokenProvider {
         Claims claims = parser.parseClaimsJws(jwt).getBody();
 
         if (claims.get(AUTHORITY_KEY) == null) {
-            throw new RuntimeException("권한이 없는 토큰입니다.");
+            throw InvalidTokenException.getInstance();
         }
 
         List<? extends GrantedAuthority> authorities = Arrays.stream(

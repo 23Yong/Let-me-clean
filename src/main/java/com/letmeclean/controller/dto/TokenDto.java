@@ -9,17 +9,13 @@ public class TokenDto {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class TokenInfo {
 
-        private String grantType;
         private String accessToken;
         private String refreshToken;
-        private Long accessTokenExpiredTime;
 
         @Builder
-        public TokenInfo(String grantType, String accessToken, String refreshToken, Long accessTokenExpiredTime) {
-            this.grantType = grantType;
+        public TokenInfo(String accessToken, String refreshToken) {
             this.accessToken = accessToken;
             this.refreshToken = refreshToken;
-            this.accessTokenExpiredTime = accessTokenExpiredTime;
         }
     }
 }

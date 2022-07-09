@@ -24,7 +24,7 @@ public class Member extends BaseTimeEntity {
     @Column(unique = true)
     private String email;
 
-    @Size(min = 8, max = 64)
+    @Size(min = 8, max = 100)
     private String password;
 
     @Size(max = 45)
@@ -50,16 +50,12 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
     @Builder
-    public Member(String email, String password, String name, String nickname, String tel, Role role) {
+    public Member(String email, String password, String name, String nickname, String tel) {
         this.email = email;
         this.password = password;
         this.username = name;
         this.nickname = nickname;
         this.tel = tel;
-        this.role = role;
     }
 }

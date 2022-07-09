@@ -1,15 +1,14 @@
-package com.letmeclean.service;
+package com.letmeclean.security.userdetails;
 
 import com.letmeclean.domain.member.Member;
 import com.letmeclean.domain.member.MemberRepository;
+import com.letmeclean.security.roles.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -18,7 +17,6 @@ import java.util.Collections;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
     @Override
@@ -30,10 +28,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private UserDetails memberToUserDetails(Member member) {
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getRole().toString());
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(Role.ROLE_MEMBER.name());
 
-        return new User(
-                member.getEmail(),
+        return new CustomUserDetails(
+                member.getId(),
                 member.getPassword(),
                 Collections.singleton(grantedAuthority)
         );
