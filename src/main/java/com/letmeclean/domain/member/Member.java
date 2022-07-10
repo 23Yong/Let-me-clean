@@ -1,6 +1,7 @@
 package com.letmeclean.domain.member;
 
 import com.letmeclean.domain.BaseTimeEntity;
+import com.letmeclean.security.roles.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,7 @@ public class Member extends BaseTimeEntity {
     @Column(unique = true)
     private String email;
 
-    @Size(min = 8, max = 64)
+    @Size(min = 8, max = 100)
     private String password;
 
     @Size(max = 45)
