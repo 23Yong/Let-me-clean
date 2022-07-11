@@ -41,7 +41,11 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                    .antMatchers("/login", "/members", "/reissue", "/members/logout").permitAll()
+                    .antMatchers(
+                            "/login",
+                            "/reissue",
+                            "/members", "/member-emails/**", "/member-nicknames/**", "/members/logout",
+                            "/cleaners", "/cleaner-emails/**").permitAll()
                     .anyRequest().authenticated()
                 .and()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
