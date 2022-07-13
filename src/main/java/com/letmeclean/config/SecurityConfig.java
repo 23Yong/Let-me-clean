@@ -3,6 +3,7 @@ package com.letmeclean.config;
 import com.letmeclean.security.filter.JwtFilter;
 import com.letmeclean.security.jwt.JwtAccessDeniedHandler;
 import com.letmeclean.security.jwt.JwtAuthenticationEntryPoint;
+import com.letmeclean.security.jwt.LogoutSuccessHandler;
 import com.letmeclean.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ public class SecurityConfig {
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAccessDeniedHandler accessDeniedHandler;
+    private final LogoutSuccessHandler logoutSuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -41,11 +43,21 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                    .antMatchers("/login", "/members", "/reissue", "/members/logout").permitAll()
+                    .antMatchers(
+                            "/login",
+                            "/reissue",
+                            "/members", "/member-emails/**", "/member-nicknames/**",
+                            "/cleaners", "/cleaner-emails/**").permitAll()
                     .anyRequest().authenticated()
                 .and()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        http
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login")
+                        .logoutSuccessHandler(logoutSuccessHandler)
+                );
         http
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)

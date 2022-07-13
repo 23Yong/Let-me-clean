@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-
 import static com.letmeclean.controller.dto.member.MemberRequest.*;
 
 @RequiredArgsConstructor
@@ -32,11 +30,5 @@ public class MemberController {
     @GetMapping("/member-nicknames/{nickname}/exists")
     public ResponseEntity<Boolean> checkNicknameDuplicated(@PathVariable String nickname) {
         return ResponseEntity.ok(memberService.checkNicknameDuplicated(nickname));
-    }
-
-    @GetMapping("/members/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request) {
-        authService.logout(request);
-        return ResponseConstants.OK;
     }
 }
