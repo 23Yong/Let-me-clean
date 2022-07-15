@@ -1,7 +1,8 @@
 package com.letmeclean.security.jwt;
 
-import com.letmeclean.domain.refreshtoken.RefreshTokenRepository;
+import com.letmeclean.common.constants.RedisJwtConstants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
@@ -17,7 +18,7 @@ import java.io.IOException;
 public class LogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
     private final TokenProvider tokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -25,8 +26,6 @@ public class LogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
         Authentication providerAuthentication = tokenProvider.getAuthentication(accessToken);
         Long currentMemberId = Long.valueOf(providerAuthentication.getName());
 
-        if (refreshTokenRepository.existsById(currentMemberId)) {
-            refreshTokenRepository.deleteById(currentMemberId);
-        }
+        redisTemplate.delete(RedisJwtConstants.JWT_PREFIX + currentMemberId);
     }
 }

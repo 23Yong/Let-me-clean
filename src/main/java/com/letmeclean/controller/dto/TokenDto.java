@@ -11,11 +11,13 @@ public class TokenDto {
 
         private String accessToken;
         private String refreshToken;
+        private Long refreshTokenExpirationTime;
 
         @Builder
-        public TokenInfo(String accessToken, String refreshToken) {
+        public TokenInfo(String accessToken, String refreshToken, Long refreshTokenExpirationTime) {
             this.accessToken = accessToken;
             this.refreshToken = refreshToken;
+            this.refreshTokenExpirationTime = refreshTokenExpirationTime;
         }
     }
 }

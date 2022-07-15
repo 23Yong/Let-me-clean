@@ -22,6 +22,10 @@ spring:
       mode: always
       schema-locations: classpath*:db/${database}/schema.sql
 
+  redis:
+    host: ${redis.host}
+    port: ${redis.port}
+
 logging:
   level:
     org.springframework.web: debug
