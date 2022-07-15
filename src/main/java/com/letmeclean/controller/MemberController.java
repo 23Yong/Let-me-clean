@@ -1,7 +1,6 @@
 package com.letmeclean.controller;
 
 import com.letmeclean.common.constants.ResponseConstants;
-import com.letmeclean.service.AuthService;
 import com.letmeclean.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import static com.letmeclean.controller.dto.member.MemberRequest.*;
 public class MemberController {
 
     private final MemberService memberService;
-    private final AuthService authService;
 
     @PostMapping("/members")
     public ResponseEntity<Void> signUp(@RequestBody SignUpRequestDto signUpRequestDto) {

@@ -67,6 +67,7 @@ public class TokenProvider {
         return TokenInfo.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .refreshTokenExpirationTime(refreshTokenExpireTime)
                 .build();
     }
 

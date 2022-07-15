@@ -1,7 +1,6 @@
 package com.letmeclean.security.filter;
 
 import com.letmeclean.common.utils.JwtUtil;
-import com.letmeclean.controller.dto.TokenDto;
 import com.letmeclean.controller.dto.TokenDto.TokenInfo;
 import com.letmeclean.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -34,13 +33,18 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         if (refreshToken != null && tokenProvider.validateToken(refreshToken)) {
-            Authentication authentication = tokenProvider.getAuthentication(accessToken);
-            TokenInfo reissueTokenInfo = tokenProvider.createToken(authentication);
+            TokenInfo reissueTokenInfo = reissue(accessToken);
             response.setHeader(HttpHeaders.AUTHORIZATION, reissueTokenInfo.getAccessToken());
             response.setStatus(HttpServletResponse.SC_CREATED);
             return;
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private TokenInfo reissue(String accessToken) {
+        Authentication authentication = tokenProvider.getAuthentication(accessToken);
+        TokenInfo reissueTokenInfo = tokenProvider.createToken(authentication);
+        return reissueTokenInfo;
     }
 }
