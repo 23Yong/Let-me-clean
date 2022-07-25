@@ -2,7 +2,8 @@ spring:
   config:
     activate:
       on-profile: "real"
-    import: application-secret.yml
+    import:
+      - application-secret.yml
 
   datasource:
     url: ${datasource.url}
