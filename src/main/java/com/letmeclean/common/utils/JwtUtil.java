@@ -28,6 +28,5 @@ public class JwtUtil {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
-
     }
 }
