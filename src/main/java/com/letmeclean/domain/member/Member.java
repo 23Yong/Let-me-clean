@@ -1,7 +1,9 @@
 package com.letmeclean.domain.member;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.letmeclean.domain.BaseTimeEntity;
-import com.letmeclean.security.roles.Role;
+import com.letmeclean.domain.payment.Payment;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,15 +11,18 @@ import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 @Entity
 public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
+    @Column(name = "member_id")
     private Long id;
 
     @NotBlank
@@ -49,6 +54,10 @@ public class Member extends BaseTimeEntity {
     @Column(columnDefinition = "varchar(45) default 'DEFAULT'")
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "member")
+    private List<Payment> payments = new ArrayList<>();
 
     @Builder
     public Member(String email, String password, String name, String nickname, String tel) {
