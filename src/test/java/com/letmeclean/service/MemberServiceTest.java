@@ -1,10 +1,11 @@
 package com.letmeclean.service;
 
-import com.letmeclean.controller.dto.member.request.MemberRequest.SignUpRequestDto;
-import com.letmeclean.domain.member.Member;
-import com.letmeclean.domain.member.MemberRepository;
-import com.letmeclean.exception.member.DuplicatedEmailException;
-import com.letmeclean.exception.member.DuplicatedNicknameException;
+import com.letmeclean.member.dto.MemberRequest.SignUpRequestDto;
+import com.letmeclean.member.domain.Member;
+import com.letmeclean.member.domain.MemberRepository;
+import com.letmeclean.global.exception.member.DuplicatedEmailException;
+import com.letmeclean.global.exception.member.DuplicatedNicknameException;
+import com.letmeclean.member.service.MemberService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

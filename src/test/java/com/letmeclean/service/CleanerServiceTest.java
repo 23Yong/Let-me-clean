@@ -1,8 +1,9 @@
 package com.letmeclean.service;
 
-import com.letmeclean.domain.cleaner.Cleaner;
-import com.letmeclean.domain.cleaner.CleanerRepository;
-import com.letmeclean.exception.member.DuplicatedEmailException;
+import com.letmeclean.cleaner.domain.Cleaner;
+import com.letmeclean.cleaner.domain.CleanerRepository;
+import com.letmeclean.cleaner.service.CleanerService;
+import com.letmeclean.global.exception.member.DuplicatedEmailException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static com.letmeclean.controller.dto.cleaner.CleanerRequest.*;
+import static com.letmeclean.cleaner.dto.request.CleanerRequest.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.*;
