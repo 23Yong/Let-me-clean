@@ -1,16 +1,23 @@
 package com.letmeclean.service;
 
+import com.letmeclean.common.utils.SecurityUtil;
 import com.letmeclean.domain.member.Member;
 import com.letmeclean.domain.member.MemberRepository;
-import com.letmeclean.controller.dto.member.MemberRequest.SignUpRequestDto;
+import com.letmeclean.controller.dto.member.request.MemberRequest.SignUpRequestDto;
+import com.letmeclean.domain.payment.Payment;
+import com.letmeclean.domain.payment.PaymentRepository;
 import com.letmeclean.exception.member.DuplicatedEmailException;
 import com.letmeclean.exception.member.DuplicatedNicknameException;
 import com.letmeclean.exception.member.InvalidPasswordException;
 import com.letmeclean.common.utils.MatcherUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -18,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PaymentRepository paymentRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     private boolean isValidPassword(String password) {
@@ -48,5 +57,9 @@ public class MemberService {
 
         Member member = signUpRequestDto.toEntity();
         memberRepository.save(member);
+    }
+
+    public List<Payment> findPaymentList(String email, Pageable pageable) {
+        return paymentRepository.findByEmail(email, pageable);
     }
 }

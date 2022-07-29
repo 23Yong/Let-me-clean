@@ -1,6 +1,6 @@
 package com.letmeclean.service;
 
-import com.letmeclean.controller.dto.member.MemberRequest.SignUpRequestDto;
+import com.letmeclean.controller.dto.member.request.MemberRequest.SignUpRequestDto;
 import com.letmeclean.domain.member.Member;
 import com.letmeclean.domain.member.MemberRepository;
 import com.letmeclean.exception.member.DuplicatedEmailException;

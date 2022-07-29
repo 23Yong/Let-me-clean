@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.letmeclean.controller.dto.member.MemberRequest.*;
+import static com.letmeclean.controller.dto.member.request.MemberRequest.*;
 
 @Component
 public class LoginAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {

@@ -48,6 +48,7 @@ public class SecurityConfig {
                             "/reissue",
                             "/members", "/member-emails/**", "/member-nicknames/**",
                             "/cleaners", "/cleaner-emails/**").permitAll()
+                    .antMatchers("/payments").hasRole("MEMBER")
                     .anyRequest().authenticated()
                 .and()
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
