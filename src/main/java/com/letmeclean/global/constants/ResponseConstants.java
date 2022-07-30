@@ -19,4 +19,7 @@ public class ResponseConstants {
 
     public static final ResponseEntity<String> INVALID_PASSWORD =
             new ResponseEntity<>("유효한 비밀번호 형식이 아닙니다.", HttpStatus.BAD_REQUEST);
+
+    public static final ResponseEntity<String> DUPLICATED_TICKET =
+            new ResponseEntity<>("중복된 티켓이름입니다.", HttpStatus.CONFLICT);
 }
