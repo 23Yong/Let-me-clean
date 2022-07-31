@@ -1,39 +1,20 @@
 package com.letmeclean.global.exception;
 
-import com.letmeclean.global.exception.member.DuplicatedEmailException;
-import com.letmeclean.global.exception.member.DuplicatedNicknameException;
-import com.letmeclean.global.exception.member.InvalidPasswordException;
-import com.letmeclean.global.exception.ticket.DuplicatedTicketException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static com.letmeclean.global.constants.ResponseConstants.*;
-
-@ControllerAdvice
+@Slf4j
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(DuplicatedEmailException.class)
-    public final ResponseEntity<String> handleDuplicatedEmailException(
-            DuplicatedEmailException ex) {
-        return DUPLICATED_EMAIL;
-    }
+    @ExceptionHandler(value = AppException.class)
+    protected ResponseEntity<ErrorResponse> applicationException(AppException ex) {
+        log.error("Application Exception {}", ex);
 
-    @ExceptionHandler(DuplicatedNicknameException.class)
-    public final ResponseEntity<String> handleDuplicatedNicknameException(
-            DuplicatedNicknameException ex) {
-        return DUPLICATED_NICKNAME;
-    }
-
-    @ExceptionHandler(InvalidPasswordException.class)
-    public final ResponseEntity<String> handleInvalidPasswordException(
-            InvalidPasswordException ex) {
-        return INVALID_PASSWORD;
-    }
-
-    @ExceptionHandler(DuplicatedTicketException.class)
-    public final ResponseEntity<String> handleDuplicatedTicketException(
-            DuplicatedTicketException ex) {
-        return DUPLICATED_TICKET;
+        ErrorCode errorCode = ex.getErrorCode();
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(ErrorResponse.toErrorResponse(errorCode));
     }
 }

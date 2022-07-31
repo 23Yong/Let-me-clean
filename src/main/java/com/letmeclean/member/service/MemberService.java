@@ -1,13 +1,11 @@
 package com.letmeclean.member.service;
 
+import com.letmeclean.global.exception.ErrorCode;
 import com.letmeclean.member.domain.Member;
 import com.letmeclean.member.domain.MemberRepository;
 import com.letmeclean.member.dto.MemberRequest.SignUpRequestDto;
 import com.letmeclean.payment.domain.Payment;
 import com.letmeclean.payment.domain.PaymentRepository;
-import com.letmeclean.global.exception.member.DuplicatedEmailException;
-import com.letmeclean.global.exception.member.DuplicatedNicknameException;
-import com.letmeclean.global.exception.member.InvalidPasswordException;
 import com.letmeclean.global.utils.MatcherUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -42,13 +40,13 @@ public class MemberService {
     @Transactional
     public void signUp(SignUpRequestDto signUpRequestDto) {
         if (checkEmailDuplicated(signUpRequestDto.getEmail())) {
-            throw DuplicatedEmailException.getInstance();
+            ErrorCode.throwDuplicateEmailConflict();
         }
         if (checkNicknameDuplicated(signUpRequestDto.getNickname())) {
-            throw DuplicatedNicknameException.getInstance();
+            ErrorCode.throwDuplicateNicknameConflict();
         }
         if (!isValidPassword(signUpRequestDto.getPassword())) {
-            throw InvalidPasswordException.getInstance();
+            ErrorCode.throwInvalidPassword();
         }
 
         signUpRequestDto.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));

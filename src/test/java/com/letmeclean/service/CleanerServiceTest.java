@@ -3,7 +3,7 @@ package com.letmeclean.service;
 import com.letmeclean.cleaner.domain.Cleaner;
 import com.letmeclean.cleaner.domain.CleanerRepository;
 import com.letmeclean.cleaner.service.CleanerService;
-import com.letmeclean.global.exception.member.DuplicatedEmailException;
+import com.letmeclean.global.exception.AppException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -92,7 +92,7 @@ class CleanerServiceTest {
             // when, then
             assertAll(
                     () -> assertThatThrownBy(() -> cleanerService.signUp(signUpRequestDto))
-                            .isInstanceOf(DuplicatedEmailException.class),
+                            .isInstanceOf(AppException.class),
                     () -> then(cleanerRepository).should().existsByEmail(signUpRequestDto.getEmail()),
                     () ->then(cleanerRepository).should(never()).save(any(Cleaner.class))
             );
