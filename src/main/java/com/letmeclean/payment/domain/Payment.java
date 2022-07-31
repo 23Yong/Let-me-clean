@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,6 +20,9 @@ public class Payment extends BaseTimeEntity {
     @GeneratedValue
     @Column(name = "payment_id")
     private Long id;
+
+    @NotEmpty
+    private String tid;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;

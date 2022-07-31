@@ -1,10 +1,9 @@
 package com.letmeclean.cleaner.service;
 
+import com.letmeclean.global.exception.ErrorCode;
 import com.letmeclean.global.utils.MatcherUtil;
 import com.letmeclean.cleaner.domain.Cleaner;
 import com.letmeclean.cleaner.domain.CleanerRepository;
-import com.letmeclean.global.exception.member.DuplicatedEmailException;
-import com.letmeclean.global.exception.member.InvalidPasswordException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,10 +29,10 @@ public class CleanerService {
     @Transactional
     public void signUp(SignUpRequestDto signUpRequestDto) {
         if (checkEmailDuplicated(signUpRequestDto.getEmail())) {
-            throw DuplicatedEmailException.getInstance();
+            ErrorCode.throwDuplicateEmailConflict();
         }
         if (!isValidPassword(signUpRequestDto.getPassword())) {
-            throw InvalidPasswordException.getInstance();
+            ErrorCode.throwInvalidPassword();
         }
 
         signUpRequestDto.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
