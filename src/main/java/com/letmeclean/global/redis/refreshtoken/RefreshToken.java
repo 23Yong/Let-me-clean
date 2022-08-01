@@ -1,24 +1,25 @@
 package com.letmeclean.global.redis.refreshtoken;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @RedisHash("RefreshToken")
 public class RefreshToken {
 
     @Id
     @GeneratedValue
     @Column(name = "refresh_token_id")
-    private String id;
+    private Long id;
 
     @Indexed
     private String email;

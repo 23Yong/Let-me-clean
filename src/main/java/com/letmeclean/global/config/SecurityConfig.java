@@ -48,8 +48,9 @@ public class SecurityConfig {
                             "/reissue",
                             "/members", "/member-emails/**", "/member-nicknames/**",
                             "/cleaners", "/cleaner-emails/**").permitAll()
-                    .antMatchers("/payments",
-                            "/ready").hasRole("MEMBER")
+                    .antMatchers(
+                            "/payments",
+                            "/api/payments/**").hasRole("MEMBER")
                     .antMatchers("/tickets").hasRole("ADMIN")
                     .anyRequest().authenticated()
                 .and()

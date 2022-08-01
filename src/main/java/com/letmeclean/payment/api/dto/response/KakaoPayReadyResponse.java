@@ -1,15 +1,17 @@
 package com.letmeclean.payment.api.dto.response;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class KakaoPayReadyResponse {
 
     // 결제 고유 번호
@@ -32,11 +34,4 @@ public class KakaoPayReadyResponse {
 
     // 결제 준비 요청 시간
     private LocalDateTime createAt;
-
-    @ConstructorProperties({"tid", "next_redirect_pc_url", "created_at"})
-    public KakaoPayReadyResponse(String tid, String nextRedirectPcUrl, LocalDateTime createAt) {
-        this.tid = tid;
-        this.nextRedirectPcUrl = nextRedirectPcUrl;
-        this.createAt = createAt;
-    }
 }
