@@ -4,6 +4,7 @@ spring:
       on-profile: "real"
     import:
       - application-secret.yml
+      - application-kakao.yml
 
   datasource:
     url: ${datasource.url}

@@ -1,10 +1,9 @@
 package com.letmeclean.service;
 
+import com.letmeclean.global.exception.AppException;
 import com.letmeclean.member.dto.MemberRequest.SignUpRequestDto;
 import com.letmeclean.member.domain.Member;
 import com.letmeclean.member.domain.MemberRepository;
-import com.letmeclean.global.exception.member.DuplicatedEmailException;
-import com.letmeclean.global.exception.member.DuplicatedNicknameException;
 import com.letmeclean.member.service.MemberService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -94,7 +93,7 @@ class MemberServiceTest {
             // when, then
             assertAll(
                     () -> assertThatThrownBy(() -> memberService.signUp(signUpRequestDto))
-                            .isInstanceOf(DuplicatedEmailException.class),
+                            .isInstanceOf(AppException.class),
                     () -> then(memberRepository).should().existsByEmail(signUpRequestDto.getEmail()),
                     () -> then(memberRepository).should(never()).save(member)
             );
@@ -112,7 +111,7 @@ class MemberServiceTest {
             // when, then
             assertAll(
                     () -> assertThatThrownBy(() -> memberService.signUp(signUpRequestDto))
-                            .isInstanceOf(DuplicatedNicknameException.class),
+                            .isInstanceOf(AppException.class),
                     () -> then(memberRepository).should().existsByNickname(signUpRequestDto.getNickname()),
                     () -> then(memberRepository).should(never()).save(member)
             );
