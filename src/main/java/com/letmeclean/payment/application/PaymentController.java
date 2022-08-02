@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 @RequiredArgsConstructor
 @RequestMapping("/api/payments")
 @RestController
@@ -18,13 +16,13 @@ public class PaymentController {
     private final PaymentApiService paymentApiService;
 
     @PostMapping("/ready")
-    public ResponseEntity<PaymentReadyDto> ready(@RequestBody @Valid PaymentReadyRequest request) {
+    public ResponseEntity<PaymentReadyDto> ready(@RequestBody PaymentReadyRequest request) {
         PaymentReadyDto paymentReadyDto = paymentApiService.ready(request);
 
         return ResponseEntity.ok(paymentReadyDto);
     }
 
-    @PostMapping("/approve")
+    @GetMapping("/approve")
     public ResponseEntity<PaymentApproveDto> approve(@RequestParam("pg_token") String pgToken) {
         PaymentApproveDto paymentApproveDto = paymentApiService.approve(pgToken);
 

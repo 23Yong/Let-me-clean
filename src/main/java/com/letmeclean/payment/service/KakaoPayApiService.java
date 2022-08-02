@@ -79,6 +79,7 @@ public class KakaoPayApiService implements PaymentApiService {
     }
 
     @Override
+    @Transactional
     public PaymentApproveDto approve(String pgToken) {
         String email = SecurityUtil.getCurrentMemberEmail();
         PaymentCache paymentCache = paymentCacheRepository.findByEmail(email)
