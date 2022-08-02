@@ -18,6 +18,7 @@ public enum ErrorCode {
 
     /* 404 NOT_FOUND */
     MEMBER_NOT_FOUND(NOT_FOUND, "해당 사용자 정보를 찾을 수 없습니다."),
+    TICKET_NOT_FOUND(NOT_FOUND, "해당 티켓 정보를 찾을 수 없습니다."),
 
     /* 409 CONFLICT */
     DUPLICATE_EMAIL_CONFLICT(CONFLICT, "이미 해당 이메일 정보가 존재합니다."),
@@ -47,6 +48,10 @@ public enum ErrorCode {
     /* 404 NOT_FOUND */
     public static AppException throwMemberNotFound() {
         throw new AppException(MEMBER_NOT_FOUND);
+    }
+
+    public static AppException throwTicketNotFound() {
+        throw new AppException(TICKET_NOT_FOUND);
     }
 
     /* 409 CONFLICT */

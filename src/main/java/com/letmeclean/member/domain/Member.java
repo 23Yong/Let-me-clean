@@ -59,6 +59,11 @@ public class Member extends BaseTimeEntity {
     @OneToMany(mappedBy = "member")
     private List<Payment> payments = new ArrayList<>();
 
+    public void addPayment(Payment payment) {
+        payment.linkMember(this);
+        payments.add(payment);
+    }
+
     @Builder
     public Member(String email, String password, String name, String nickname, String tel) {
         this.email = email;

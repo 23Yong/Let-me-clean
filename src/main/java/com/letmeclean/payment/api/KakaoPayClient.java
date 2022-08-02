@@ -23,7 +23,7 @@ import java.net.URISyntaxException;
 import java.util.Map;
 
 @Service
-public class KakaoPayClient {
+public class KakaoPayClient implements PayClient {
 
     private static final String HOST = "https://kapi.kakao.com";
 
