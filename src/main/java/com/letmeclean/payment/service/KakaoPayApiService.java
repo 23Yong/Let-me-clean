@@ -93,7 +93,7 @@ public class KakaoPayApiService implements PaymentApiService {
 
         KakaoPayApproveResponse response = kakaoPayClient.approve(kakaoPayProperties.getAuthorization(), kakaoPayApproveRequest);
 
-        TicketSoldRequestDto ticketSoldRequestDto = new TicketSoldRequestDto(email, response.getTotalAmount(), paymentCache.getTicketId());
+        TicketSoldRequestDto ticketSoldRequestDto = new TicketSoldRequestDto(email, response.getQuantity(), response.getTotalAmount(), paymentCache.getTicketId());
         ticketService.sold(ticketSoldRequestDto);
 
         paymentCacheRepository.delete(paymentCache);

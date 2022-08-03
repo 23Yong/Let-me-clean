@@ -31,6 +31,10 @@ public class IssuedTicket extends BaseTimeEntity {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
+    public void linkMember(Member member) {
+        this.member = member;
+    }
+
     @Builder
     public IssuedTicket(IssuedTicketStatus issuedTicketStatus, Member member, Ticket ticket) {
         this.issuedTicketStatus = issuedTicketStatus;

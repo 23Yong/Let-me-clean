@@ -27,6 +27,9 @@ public class Payment extends BaseTimeEntity {
     @Min(0)
     private Integer totalPrice;
 
+    @Min(0)
+    private Integer quantity;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -40,9 +43,10 @@ public class Payment extends BaseTimeEntity {
     }
 
     @Builder
-    public Payment(PaymentStatus paymentStatus, Integer totalPrice, Member member, Ticket ticket) {
+    public Payment(PaymentStatus paymentStatus, Integer totalPrice, Integer quantity, Member member, Ticket ticket) {
         this.paymentStatus = paymentStatus;
         this.totalPrice = totalPrice;
+        this.quantity = quantity;
         this.member = member;
         this.ticket = ticket;
     }
