@@ -23,4 +23,16 @@ public class TicketRequest {
                     .build();
         }
     }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor
+    public static class TicketSoldRequestDto {
+
+        private String email;
+        private Integer quantity;
+        private Integer totalPrice;
+        private Long ticketId;
+    }
 }

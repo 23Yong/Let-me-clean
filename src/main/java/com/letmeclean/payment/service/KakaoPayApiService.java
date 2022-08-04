@@ -4,28 +4,27 @@ import com.letmeclean.global.exception.ErrorCode;
 import com.letmeclean.global.redis.paymentcache.PaymentCache;
 import com.letmeclean.global.redis.paymentcache.RedisPaymentCacheRepository;
 import com.letmeclean.global.utils.SecurityUtil;
-import com.letmeclean.member.domain.Member;
-import com.letmeclean.member.domain.MemberRepository;
 import com.letmeclean.payment.api.KakaoPayClient;
 import com.letmeclean.payment.api.KakaoPayProperties;
+import com.letmeclean.payment.api.PayClient;
 import com.letmeclean.payment.api.dto.request.KakaoPayApproveRequest;
 import com.letmeclean.payment.api.dto.request.KakaoPayReadyRequest;
 import com.letmeclean.payment.api.dto.response.KakaoPayApproveResponse;
 import com.letmeclean.payment.api.dto.response.KakaoPayReadyResponse;
 import com.letmeclean.payment.application.dto.PaymentReadyRequest;
-import com.letmeclean.payment.domain.Payment;
-import com.letmeclean.payment.domain.PaymentRepository;
-import com.letmeclean.payment.domain.PaymentStatus;
 import com.letmeclean.payment.service.dto.PaymentApproveDto;
 import com.letmeclean.payment.service.dto.PaymentReadyDto;
 import com.letmeclean.payment.service.interfaces.PaymentApiService;
 import com.letmeclean.ticket.domain.Ticket;
 import com.letmeclean.ticket.domain.TicketRepository;
+import com.letmeclean.ticket.service.TicketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+
+import static com.letmeclean.ticket.dto.request.TicketRequest.*;
 
 @RequiredArgsConstructor
 @Service
@@ -33,11 +32,11 @@ public class KakaoPayApiService implements PaymentApiService {
 
     private final KakaoPayProperties kakaoPayProperties;
 
-    private final KakaoPayClient kakaoPayClient;
+    private final PayClient kakaoPayClient;
 
-    private final MemberRepository memberRepository;
+    private final TicketService ticketService;
+
     private final TicketRepository ticketRepository;
-    private final PaymentRepository paymentRepository;
     private final RedisPaymentCacheRepository paymentCacheRepository;
 
     @Override
@@ -94,15 +93,9 @@ public class KakaoPayApiService implements PaymentApiService {
 
         KakaoPayApproveResponse response = kakaoPayClient.approve(kakaoPayProperties.getAuthorization(), kakaoPayApproveRequest);
 
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> ErrorCode.throwMemberNotFound());
+        TicketSoldRequestDto ticketSoldRequestDto = new TicketSoldRequestDto(email, response.getQuantity(), response.getTotalAmount(), paymentCache.getTicketId());
+        ticketService.sold(ticketSoldRequestDto);
 
-        Payment payment = new Payment(
-                PaymentStatus.TICKET_PAY_COMPLETED,
-                response.getTotalAmount(),
-                member
-        );
-        paymentRepository.save(payment);
         paymentCacheRepository.delete(paymentCache);
 
         return new PaymentApproveDto(email, response);

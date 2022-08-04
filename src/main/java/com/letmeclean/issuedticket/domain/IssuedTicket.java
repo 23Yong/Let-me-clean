@@ -1,4 +1,4 @@
-package com.letmeclean.payment.domain;
+package com.letmeclean.issuedticket.domain;
 
 import com.letmeclean.global.BaseTimeEntity;
 import com.letmeclean.member.domain.Member;
@@ -9,26 +9,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Payment extends BaseTimeEntity {
+public class IssuedTicket extends BaseTimeEntity {
 
     @Id
     @GeneratedValue
-    @Column(name = "payment_id")
+    @Column(name = "issued_ticket_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private PaymentStatus paymentStatus;
-
-    @Min(0)
-    private Integer totalPrice;
-
-    @Min(0)
-    private Integer quantity;
+    private IssuedTicketStatus issuedTicketStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -43,10 +36,8 @@ public class Payment extends BaseTimeEntity {
     }
 
     @Builder
-    public Payment(PaymentStatus paymentStatus, Integer totalPrice, Integer quantity, Member member, Ticket ticket) {
-        this.paymentStatus = paymentStatus;
-        this.totalPrice = totalPrice;
-        this.quantity = quantity;
+    public IssuedTicket(IssuedTicketStatus issuedTicketStatus, Member member, Ticket ticket) {
+        this.issuedTicketStatus = issuedTicketStatus;
         this.member = member;
         this.ticket = ticket;
     }
