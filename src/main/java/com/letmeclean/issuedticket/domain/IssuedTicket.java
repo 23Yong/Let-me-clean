@@ -1,5 +1,6 @@
 package com.letmeclean.issuedticket.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.letmeclean.global.BaseTimeEntity;
 import com.letmeclean.member.domain.Member;
 import com.letmeclean.ticket.domain.Ticket;

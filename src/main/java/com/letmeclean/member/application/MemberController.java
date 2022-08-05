@@ -2,11 +2,13 @@ package com.letmeclean.member.application;
 
 import com.letmeclean.global.constants.ResponseConstants;
 import com.letmeclean.global.utils.SecurityUtil;
-import com.letmeclean.payment.domain.Payment;
+import com.letmeclean.issuedticket.domain.IssuedTicket;
+import com.letmeclean.issuedticket.dto.response.IssuedTicketDetailResponse;
 import com.letmeclean.member.service.MemberService;
+import com.letmeclean.payment.domain.Payment;
+import com.letmeclean.payment.dto.response.PaymentDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,11 +38,17 @@ public class MemberController {
         return ResponseEntity.ok(memberService.checkNicknameDuplicated(nickname));
     }
 
-    @GetMapping("/payments")
-    public ResponseEntity<List<Payment>> getMemberOfPaymentList(
-            @PageableDefault(size = 5) Pageable pageable) {
+    @GetMapping("/members/payments")
+    public ResponseEntity<List<PaymentDetailResponse>> getMemberOfPaymentList(Pageable pageable) {
         String email = SecurityUtil.getCurrentMemberEmail();
-        List<Payment> payments = memberService.findPaymentList(email, pageable);
+        List<PaymentDetailResponse> payments = memberService.findPaymentList(email, pageable);
         return ResponseEntity.ok(payments);
+    }
+
+    @GetMapping("/members/issued-tickets")
+    public ResponseEntity<List<IssuedTicketDetailResponse>> getMemberOfIssuedTicketList(Pageable pageable) {
+        String email = SecurityUtil.getCurrentMemberEmail();
+        List<IssuedTicketDetailResponse> issuedTickets = memberService.findIssuedTicketList(email, pageable);
+        return ResponseEntity.ok(issuedTickets);
     }
 }

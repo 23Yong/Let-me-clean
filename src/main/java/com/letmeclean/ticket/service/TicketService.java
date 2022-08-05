@@ -2,14 +2,13 @@ package com.letmeclean.ticket.service;
 
 import com.letmeclean.global.exception.ErrorCode;
 import com.letmeclean.issuedticket.domain.IssuedTicket;
-import com.letmeclean.issuedticket.domain.IssuedTicketRepository;
 import com.letmeclean.issuedticket.domain.IssuedTicketStatus;
 import com.letmeclean.issuedticket.service.IssuedTicketService;
 import com.letmeclean.member.domain.Member;
-import com.letmeclean.member.domain.MemberRepository;
+import com.letmeclean.member.service.MemberService;
 import com.letmeclean.payment.domain.Payment;
-import com.letmeclean.payment.domain.PaymentRepository;
 import com.letmeclean.payment.domain.PaymentStatus;
+import com.letmeclean.payment.service.PaymentService;
 import com.letmeclean.ticket.domain.Ticket;
 import com.letmeclean.ticket.domain.TicketRepository;
 import com.letmeclean.ticket.dto.request.TicketRequest;
@@ -22,14 +21,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class TicketService {
 
     private final IssuedTicketService issuedTicketService;
+    private final MemberService memberService;
+    private final PaymentService paymentService;
 
-    private final MemberRepository memberRepository;
-    private final PaymentRepository paymentRepository;
     private final TicketRepository ticketRepository;
+
+    public Ticket findTicket(Long ticketId) {
+        return ticketRepository.findById(ticketId)
+                .orElseThrow(() -> ErrorCode.throwTicketNotFound());
+    }
 
     @Transactional
     public void register(TicketRequest.TicketSaveRequestDto ticketSaveRequestDto) {
@@ -43,13 +48,8 @@ public class TicketService {
 
     @Transactional
     public void sold(TicketSoldRequestDto ticketSoldRequest) {
-        String email = ticketSoldRequest.getEmail();
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> ErrorCode.throwMemberNotFound());
-
-        Ticket ticket = ticketRepository.findById(ticketSoldRequest.getTicketId())
-                        .orElseThrow(() -> ErrorCode.throwTicketNotFound());
-
+        Member member = memberService.findMember(ticketSoldRequest.getEmail());
+        Ticket ticket = findTicket(ticketSoldRequest.getTicketId());
 
         List<IssuedTicket> issuedTickets = new ArrayList<>();
         for (int i = 0; i < ticketSoldRequest.getQuantity(); i++) {
@@ -72,7 +72,6 @@ public class TicketService {
                 ticket
         );
         member.addPayment(payment);
-
-        paymentRepository.save(payment);
+        paymentService.savePayment(payment);
     }
 }
