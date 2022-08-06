@@ -1,6 +1,6 @@
 package com.letmeclean.global.utils;
 
-import com.letmeclean.global.dto.TokenDto.TokenInfo;
+import com.letmeclean.global.security.jwt.dto.TokenDto.TokenInfo;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;

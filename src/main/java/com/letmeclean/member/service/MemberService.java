@@ -1,12 +1,16 @@
 package com.letmeclean.member.service;
 
 import com.letmeclean.global.exception.ErrorCode;
+import com.letmeclean.issuedticket.domain.IssuedTicket;
+import com.letmeclean.issuedticket.domain.IssuedTicketRepository;
+import com.letmeclean.issuedticket.dto.response.IssuedTicketDetailResponse;
 import com.letmeclean.member.domain.Member;
 import com.letmeclean.member.domain.MemberRepository;
 import com.letmeclean.member.dto.MemberRequest.SignUpRequestDto;
 import com.letmeclean.payment.domain.Payment;
 import com.letmeclean.payment.domain.PaymentRepository;
 import com.letmeclean.global.utils.MatcherUtil;
+import com.letmeclean.payment.dto.response.PaymentDetailResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +26,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PaymentRepository paymentRepository;
+    private final IssuedTicketRepository issuedTicketRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -55,7 +60,16 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public List<Payment> findPaymentList(String email, Pageable pageable) {
-        return paymentRepository.findByEmail(email, pageable);
+    public Member findMember(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> ErrorCode.throwMemberNotFound());
+    }
+
+    public List<PaymentDetailResponse> findPaymentList(String email, Pageable pageable) {
+        return paymentRepository.findPaymentsByMemberEmail(email, pageable);
+    }
+
+    public List<IssuedTicketDetailResponse> findIssuedTicketList(String email, Pageable pageable) {
+        return issuedTicketRepository.findIssuedTicketsByEmail(email, pageable);
     }
 }

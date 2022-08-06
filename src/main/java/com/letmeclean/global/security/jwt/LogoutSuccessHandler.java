@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.letmeclean.global.dto.TokenDto.*;
+import static com.letmeclean.global.security.jwt.dto.TokenDto.*;
 
 @RequiredArgsConstructor
 @Component

@@ -2,7 +2,7 @@ package com.letmeclean.global.security.jwt;
 
 import com.letmeclean.global.redis.refreshtoken.RedisRefreshTokenRepository;
 import com.letmeclean.global.utils.SecurityUtil;
-import com.letmeclean.global.dto.TokenDto;
+import com.letmeclean.global.security.jwt.dto.TokenDto;
 import com.letmeclean.global.redis.refreshtoken.RefreshToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;

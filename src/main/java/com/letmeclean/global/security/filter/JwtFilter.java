@@ -1,7 +1,7 @@
 package com.letmeclean.global.security.filter;
 
 import com.letmeclean.global.utils.JwtUtil;
-import com.letmeclean.global.dto.TokenDto.TokenInfo;
+import com.letmeclean.global.security.jwt.dto.TokenDto.TokenInfo;
 import com.letmeclean.global.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;

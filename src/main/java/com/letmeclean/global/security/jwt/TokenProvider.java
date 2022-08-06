@@ -1,6 +1,6 @@
 package com.letmeclean.global.security.jwt;
 
-import com.letmeclean.global.dto.TokenDto.TokenInfo;
+import com.letmeclean.global.security.jwt.dto.TokenDto.TokenInfo;
 import com.letmeclean.global.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;

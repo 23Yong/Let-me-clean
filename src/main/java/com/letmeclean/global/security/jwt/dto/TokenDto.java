@@ -1,4 +1,4 @@
-package com.letmeclean.global.dto;
+package com.letmeclean.global.security.jwt.dto;
 
 import lombok.*;
 
