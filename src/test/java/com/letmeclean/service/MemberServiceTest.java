@@ -14,6 +14,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import java.util.Optional;
+import java.util.Set;
+
+import static com.letmeclean.member.dto.MemberRequest.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +41,9 @@ class MemberServiceTest {
 
     Member member;
 
+    static ValidatorFactory validatorFactory;
+    static Validator validator;
+
     private SignUpRequestDto createMemberSignUpRequestDto() {
         return SignUpRequestDto.builder()
                 .email("23Yong@test.com")
@@ -41,6 +52,12 @@ class MemberServiceTest {
                 .nickname("ImGilDong")
                 .tel("010-1234-1234")
                 .build();
+    }
+
+    @BeforeAll
+    static void setValidator() {
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
     }
 
     @BeforeEach
@@ -115,6 +132,106 @@ class MemberServiceTest {
                     () -> then(memberRepository).should().existsByNickname(signUpRequestDto.getNickname()),
                     () -> then(memberRepository).should(never()).save(member)
             );
+        }
+
+        @DisplayName("빈칸으로 입력해 회원가입에 실패한다.")
+        @Test
+        void signUpFailEmpty() {
+            // given
+            SignUpRequestDto signUpRequestDto = SignUpRequestDto.builder()
+                    .email(" ")
+                    .password(" ")
+                    .nickname(" ")
+                    .username(" ")
+                    .tel(" ")
+                    .build();
+            Set<ConstraintViolation<SignUpRequestDto>> constraintViolations = validator.validate(signUpRequestDto);
+
+            // when, then
+            assertThat(constraintViolations.size()).isEqualTo(5);
+        }
+    }
+
+    @DisplayName("멤버가 사용자의 정보(닉네임, 전화번호) 변경을 시도하면")
+    @Nested
+    class MemberEditInfoTest {
+
+        @DisplayName("변경에 성공한다.")
+        @Test
+        void editInfoSuccess() {
+            // given
+            String email = "23Yong@test.com";
+            EditInfoRequestDto infoRequestDto = new EditInfoRequestDto(
+                    "Changed Nickname",
+                    "010-9876-0987"
+            );
+            when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
+
+            // when
+            memberService.editMemberInfo(email, infoRequestDto);
+
+            // then
+            assertAll(
+                    () -> assertThat(member.getNickname()).isEqualTo("Changed Nickname"),
+                    () -> assertThat(member.getTel()).isEqualTo("010-9876-0987")
+            );
+        }
+
+        @DisplayName("아무것도 입력하지 않아 실패한다.")
+        @Test
+        void editInfoFailEmpty() {
+            // given
+            EditInfoRequestDto infoRequestDto = new EditInfoRequestDto(
+                    " ",
+                    " "
+            );
+
+            Set<ConstraintViolation<EditInfoRequestDto>> constraintViolations = validator.validate(infoRequestDto);
+
+            // when, then
+            assertThat(constraintViolations.size()).isEqualTo(2);
+        }
+    }
+
+    @DisplayName("멤버가 비밀번호 변경을 시도하면")
+    @Nested
+    class MemberEditPasswordTest {
+        @DisplayName("변경에 성공한다.")
+        @Test
+        void editPasswordSuccess() {
+            // given
+            String email = "23Yong@test.com";
+            String newPassword = "newPassword";
+            EditPasswordRequestDto editPasswordRequestDto = new EditPasswordRequestDto(
+                    member.getPassword(),
+                    newPassword
+            );
+
+            when(memberRepository.findByEmail(email)).thenReturn(Optional.of(member));
+
+            // when
+            memberService.editPassword(email, editPasswordRequestDto);
+
+            // then
+            assertAll(
+                    () -> then(passwordEncoder).should().encode(newPassword),
+                    () -> passwordEncoder.matches(newPassword, member.getPassword())
+            );
+        }
+
+        @DisplayName("아무것도 입력하지 않아 실패한다.")
+        @Test
+        void editInfoFailEmpty() {
+            // given
+            EditPasswordRequestDto editPasswordRequestDto = new EditPasswordRequestDto(
+                    member.getPassword(),
+                    " "
+            );
+
+            Set<ConstraintViolation<EditPasswordRequestDto>> constraintViolations = validator.validate(editPasswordRequestDto);
+
+            // when, then
+            assertThat(constraintViolations.size()).isEqualTo(1);
         }
     }
 }

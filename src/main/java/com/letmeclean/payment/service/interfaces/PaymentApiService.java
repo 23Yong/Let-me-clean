@@ -6,7 +6,7 @@ import com.letmeclean.payment.service.dto.PaymentReadyDto;
 
 public interface PaymentApiService {
 
-    PaymentReadyDto ready(PaymentReadyRequest request);
+    PaymentReadyDto ready(String email, PaymentReadyRequest request);
 
-    PaymentApproveDto approve(String pgToken);
+    PaymentApproveDto approve(String email, String pgToken);
 }

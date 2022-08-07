@@ -13,10 +13,15 @@ public class MemberRequest {
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class SignUpRequestDto {
 
+        @Email
         private String email;
+        @NotBlank
         private String password;
+        @NotBlank
         private String username;
+        @NotBlank
         private String nickname;
+        @NotBlank
         private String tel;
 
         @Builder
@@ -66,6 +71,35 @@ public class MemberRequest {
         @Builder
         public LogoutRequestDto(String accessToken) {
             this.accessToken = accessToken;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class EditInfoRequestDto {
+
+        @NotBlank
+        private String nickname;
+        @NotBlank
+        private String tel;
+
+        public EditInfoRequestDto(String nickname, String tel) {
+            this.nickname = nickname;
+            this.tel = tel;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class EditPasswordRequestDto {
+
+        private String prevPassword;
+        @NotBlank
+        private String newPassword;
+
+        public EditPasswordRequestDto(String prevPassword, String newPassword) {
+            this.prevPassword = prevPassword;
+            this.newPassword = newPassword;
         }
     }
 }

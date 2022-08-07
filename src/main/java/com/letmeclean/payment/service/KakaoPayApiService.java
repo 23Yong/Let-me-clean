@@ -41,9 +41,8 @@ public class KakaoPayApiService implements PaymentApiService {
 
     @Override
     @Transactional
-    public PaymentReadyDto ready(PaymentReadyRequest request) {
+    public PaymentReadyDto ready(String email, PaymentReadyRequest request) {
         String paymentNumber = UUID.randomUUID().toString();
-        String email = SecurityUtil.getCurrentMemberEmail();
         Ticket ticket = ticketRepository.findById(request.getTicketId())
                 .orElseThrow(() -> new RuntimeException());
 
@@ -79,8 +78,7 @@ public class KakaoPayApiService implements PaymentApiService {
 
     @Override
     @Transactional
-    public PaymentApproveDto approve(String pgToken) {
-        String email = SecurityUtil.getCurrentMemberEmail();
+    public PaymentApproveDto approve(String email, String pgToken) {
         PaymentCache paymentCache = paymentCacheRepository.findByEmail(email)
                 .orElseThrow(() -> ErrorCode.throwBadRequestPaymentApprove());
 

@@ -1,13 +1,13 @@
 package com.letmeclean.member.service;
 
 import com.letmeclean.global.exception.ErrorCode;
-import com.letmeclean.issuedticket.domain.IssuedTicket;
 import com.letmeclean.issuedticket.domain.IssuedTicketRepository;
 import com.letmeclean.issuedticket.dto.response.IssuedTicketDetailResponse;
 import com.letmeclean.member.domain.Member;
 import com.letmeclean.member.domain.MemberRepository;
+import com.letmeclean.member.dto.MemberRequest.EditInfoRequestDto;
+import com.letmeclean.member.dto.MemberRequest.EditPasswordRequestDto;
 import com.letmeclean.member.dto.MemberRequest.SignUpRequestDto;
-import com.letmeclean.payment.domain.Payment;
 import com.letmeclean.payment.domain.PaymentRepository;
 import com.letmeclean.global.utils.MatcherUtil;
 import com.letmeclean.payment.dto.response.PaymentDetailResponse;
@@ -71,5 +71,26 @@ public class MemberService {
 
     public List<IssuedTicketDetailResponse> findIssuedTicketList(String email, Pageable pageable) {
         return issuedTicketRepository.findIssuedTicketsByEmail(email, pageable);
+    }
+
+    @Transactional
+    public void editMemberInfo(String email, EditInfoRequestDto editInfoRequestDto) {
+        Member member = findMember(email);
+        member.changeNickname(editInfoRequestDto.getNickname());
+        member.changeTel(editInfoRequestDto.getTel());
+    }
+
+    @Transactional
+    public void editPassword(String email, EditPasswordRequestDto editPasswordRequestDto) {
+        Member member = findMember(email);
+        String prevPassword = editPasswordRequestDto.getPrevPassword();
+        String newPassword = editPasswordRequestDto.getNewPassword();
+        String encodedPassword = passwordEncoder.encode(prevPassword);
+
+        if (passwordEncoder.matches(prevPassword, encodedPassword)) {
+            member.changePassword(passwordEncoder.encode(newPassword));
+        } else {
+            ErrorCode.throwBadRequestPrevPassword();
+        }
     }
 }
