@@ -16,6 +16,7 @@ public enum ErrorCode {
     BAD_REQUEST_PAYMENT_READY(BAD_REQUEST, "이미 진행중인 결제가 존재합니다."),
     BAD_REQUEST_PAYMENT_APPROVE(BAD_REQUEST, "처리하고자 하는 결제 정보가 존재하지 않습니다."),
     BAD_REQUEST_PREV_PASSWORD(BAD_REQUEST, "이전 비밀번호와 일치하지 않습니다."),
+    BAD_REQUEST_COUPON_EXPIRED_TIME(BAD_REQUEST, "쿠폰의 유효기간이 생성시간보다 빠릅니다."),
 
     /* 404 NOT_FOUND */
     MEMBER_NOT_FOUND(NOT_FOUND, "해당 사용자 정보를 찾을 수 없습니다."),
@@ -48,6 +49,10 @@ public enum ErrorCode {
 
     public static AppException throwBadRequestPrevPassword() {
         throw new AppException(BAD_REQUEST_PREV_PASSWORD);
+    }
+
+    public static AppException throwBadRequestCouponExpiredTime() {
+        throw new AppException(BAD_REQUEST_COUPON_EXPIRED_TIME);
     }
 
     /* 404 NOT_FOUND */
