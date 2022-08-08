@@ -3,6 +3,7 @@ package com.letmeclean.member.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.letmeclean.global.BaseTimeEntity;
 import com.letmeclean.global.exception.ErrorCode;
+import com.letmeclean.issuedcoupon.domain.IssuedCoupon;
 import com.letmeclean.issuedticket.domain.IssuedTicket;
 import com.letmeclean.payment.domain.Payment;
 import lombok.AccessLevel;
@@ -57,13 +58,14 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<Payment> payments = new ArrayList<>();
 
-    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private List<IssuedTicket> issuedTickets = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<IssuedCoupon> issuedCoupons = new ArrayList<>();
 
     public void changeNickname(String nickname) {
         this.nickname = nickname;
@@ -85,6 +87,11 @@ public class Member extends BaseTimeEntity {
     public void addIssuedTicket(IssuedTicket issuedTicket) {
         issuedTicket.linkMember(this);
         issuedTickets.add(issuedTicket);
+    }
+
+    public void addIssuedCoupon(IssuedCoupon issuedCoupon) {
+        issuedCoupon.linkMember(this);
+        issuedCoupons.add(issuedCoupon);
     }
 
     @Builder

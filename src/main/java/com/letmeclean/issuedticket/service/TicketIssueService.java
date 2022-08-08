@@ -10,7 +10,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class IssuedTicketService {
+public class TicketIssueService {
 
     private final IssuedTicketRepository issuedTicketRepository;
 

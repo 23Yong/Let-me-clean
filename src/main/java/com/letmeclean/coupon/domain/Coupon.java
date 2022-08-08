@@ -2,6 +2,7 @@ package com.letmeclean.coupon.domain;
 
 import com.letmeclean.global.BaseTimeEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +34,7 @@ public class Coupon extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private CouponStatus couponStatus;
 
+    @Builder
     public Coupon(String name, Integer pointAmount, LocalDateTime expiredAt) {
         this.name = name;
         this.pointAmount = pointAmount;
