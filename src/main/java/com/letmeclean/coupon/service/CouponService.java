@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class CouponService {
 
@@ -24,5 +25,10 @@ public class CouponService {
             ErrorCode.throwBadRequestCouponExpiredTime();
         }
         couponRepository.save(coupon);
+    }
+
+    public Coupon findCoupon(Long couponId) {
+        return couponRepository.findById(couponId)
+                .orElseThrow(() -> ErrorCode.throwCouponNotFound());
     }
 }

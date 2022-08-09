@@ -27,7 +27,11 @@ public class CouponRequest {
         private LocalDateTime expiredAt;
 
         public Coupon toEntity() {
-            return new Coupon(name, pointAmount, expiredAt);
+            return Coupon.builder()
+                    .name(name)
+                    .pointAmount(pointAmount)
+                    .expiredAt(expiredAt)
+                    .build();
         }
     }
 }

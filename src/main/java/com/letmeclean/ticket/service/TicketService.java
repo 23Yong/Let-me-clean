@@ -3,7 +3,7 @@ package com.letmeclean.ticket.service;
 import com.letmeclean.global.exception.ErrorCode;
 import com.letmeclean.issuedticket.domain.IssuedTicket;
 import com.letmeclean.issuedticket.domain.IssuedTicketStatus;
-import com.letmeclean.issuedticket.service.IssuedTicketService;
+import com.letmeclean.issuedticket.service.TicketIssueService;
 import com.letmeclean.member.domain.Member;
 import com.letmeclean.member.service.MemberService;
 import com.letmeclean.payment.domain.Payment;
@@ -25,7 +25,7 @@ import java.util.List;
 @Service
 public class TicketService {
 
-    private final IssuedTicketService issuedTicketService;
+    private final TicketIssueService ticketIssueService;
     private final MemberService memberService;
     private final PaymentService paymentService;
 
@@ -62,7 +62,7 @@ public class TicketService {
             member.addIssuedTicket(issuedTicket);
         }
 
-        issuedTicketService.issueTickets(issuedTickets);
+        ticketIssueService.issueTickets(issuedTickets);
 
         Payment payment = new Payment(
                 PaymentStatus.TICKET_PAY_COMPLETED,
