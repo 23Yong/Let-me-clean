@@ -94,6 +94,10 @@ public class Member extends BaseTimeEntity {
         issuedCoupons.add(issuedCoupon);
     }
 
+    public void addPoint(Integer pointAmount) {
+        this.point += pointAmount;
+    }
+
     @Builder
     public Member(String email, String password, String name, String nickname, String tel) {
         this.email = email;

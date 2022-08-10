@@ -1,18 +1,23 @@
 package com.letmeclean.issuedcoupon.service;
 
 import com.letmeclean.coupon.domain.Coupon;
+import com.letmeclean.coupon.domain.CouponStatus;
 import com.letmeclean.coupon.service.CouponService;
+import com.letmeclean.global.exception.AppException;
 import com.letmeclean.issuedcoupon.domain.IssuedCoupon;
 import com.letmeclean.issuedcoupon.domain.IssuedCouponRepository;
+import com.letmeclean.issuedcoupon.domain.IssuedCouponStatus;
 import com.letmeclean.member.domain.Member;
 import com.letmeclean.member.service.MemberService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static com.letmeclean.issuedcoupon.dto.request.IssuedCouponRequest.*;
 import static org.assertj.core.api.Assertions.*;
@@ -33,7 +38,10 @@ class CouponIssueServiceTest {
     CouponIssueService couponIssueService;
 
     Member member;
+    @Mock
     Coupon coupon;
+    @Mock
+    IssuedCoupon issuedCoupon;
 
     @BeforeEach
     void setUp() {
@@ -77,6 +85,53 @@ class CouponIssueServiceTest {
                     () -> assertThat(member.getIssuedCoupons()).hasSize(1),
                     () -> assertThat(member.getIssuedCoupons().get(0).getMember()).isEqualTo(member)
             );
+        }
+    }
+
+    @DisplayName("회원이 쿠폰을 포인트로 전환하면")
+    @Nested
+    class ExchangeCouponToPointTest {
+
+        @DisplayName("포인트 전환에 성공한다.")
+        @Test
+        void exchangeSuccess() {
+            // given
+            String email = "23Yong@test.com";
+
+            IssuedCouponExchangeRequestDto issuedCouponExchangeRequestDto =
+                    new IssuedCouponExchangeRequestDto(email, 3L);
+            issuedCoupon = new IssuedCoupon(IssuedCouponStatus.NOT_USED, coupon, member);
+
+            when(issuedCouponRepository.findById(any(Long.class))).thenReturn(Optional.of(issuedCoupon));
+
+            // when
+            couponIssueService.exchangeCouponToPoint(issuedCouponExchangeRequestDto);
+
+            // then
+            assertAll(
+                    () -> assertThat(member.getPoint()).isEqualTo(10000),
+                    () -> assertThat(member.getIssuedCoupons()).hasSize(0),
+                    () -> assertThat(issuedCoupon.getIssuedCouponStatus()).isEqualTo(IssuedCouponStatus.USED)
+            );
+        }
+
+        @DisplayName("유효기간 만료로 인해 전환에 실패한다.")
+        @Test
+        void exchangeFailExpired() {
+            // given
+            Coupon mockCoupon = Mockito.mock(Coupon.class);
+            String email = "23Yong@test.com";
+
+            IssuedCouponExchangeRequestDto issuedCouponExchangeRequestDto =
+                    new IssuedCouponExchangeRequestDto(email, 3L);
+            issuedCoupon = new IssuedCoupon(IssuedCouponStatus.NOT_USED, mockCoupon, member);
+
+            when(issuedCouponRepository.findById(any(Long.class))).thenReturn(Optional.of(issuedCoupon));
+            when(mockCoupon.getCouponStatus()).thenReturn(CouponStatus.EXPIRED);
+
+            // when, then
+            assertThatThrownBy(() -> couponIssueService.exchangeCouponToPoint(issuedCouponExchangeRequestDto))
+                    .isInstanceOf(AppException.class);
         }
     }
 }
