@@ -20,4 +20,15 @@ public class IssuedCouponRequest {
         @NotNull
         private Long couponId;
     }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor
+    @Getter
+    public static class IssuedCouponExchangeRequestDto {
+
+        @NotBlank
+        private String email;
+        @NotNull
+        private Long issuedCouponId;
+    }
 }

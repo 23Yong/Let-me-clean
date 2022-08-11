@@ -1,7 +1,9 @@
 package com.letmeclean.issuedcoupon.domain;
 
 import com.letmeclean.coupon.domain.Coupon;
+import com.letmeclean.coupon.domain.CouponStatus;
 import com.letmeclean.global.BaseTimeEntity;
+import com.letmeclean.global.exception.ErrorCode;
 import com.letmeclean.member.domain.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -30,6 +32,15 @@ public class IssuedCoupon extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void useCoupon() {
+        if (this.coupon.getCouponStatus() == CouponStatus.EXPIRED) {
+            ErrorCode.throwBadRequestCouponExpiredTime();
+        }
+        this.issuedCouponStatus = IssuedCouponStatus.USED;
+        member.getIssuedCoupons().remove(this);
+        member.addPoint(coupon.getPointAmount());
+    }
 
     public void linkMember(Member member) {
         this.member = member;
