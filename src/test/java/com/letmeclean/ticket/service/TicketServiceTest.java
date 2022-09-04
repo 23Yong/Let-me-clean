@@ -1,9 +1,10 @@
 package com.letmeclean.ticket.service;
 
 import com.letmeclean.global.exception.AppException;
-import com.letmeclean.ticket.domain.Ticket;
-import com.letmeclean.ticket.domain.TicketRepository;
-import com.letmeclean.ticket.dto.request.TicketRequest;
+import com.letmeclean.model.ticket.Ticket;
+import com.letmeclean.model.ticket.TicketRepository;
+import com.letmeclean.service.TicketService;
+import com.letmeclean.dto.ticket.request.TicketRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

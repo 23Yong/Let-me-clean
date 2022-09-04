@@ -1,8 +1,8 @@
 package com.letmeclean.global.security.userdetails;
 
 import com.letmeclean.global.security.roles.Role;
-import com.letmeclean.member.domain.Member;
-import com.letmeclean.member.domain.MemberRepository;
+import com.letmeclean.model.member.Member;
+import com.letmeclean.model.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
