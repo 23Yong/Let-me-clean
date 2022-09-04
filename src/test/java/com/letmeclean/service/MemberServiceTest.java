@@ -1,10 +1,9 @@
 package com.letmeclean.service;
 
 import com.letmeclean.global.exception.AppException;
-import com.letmeclean.member.dto.MemberRequest.SignUpRequestDto;
-import com.letmeclean.member.domain.Member;
-import com.letmeclean.member.domain.MemberRepository;
-import com.letmeclean.member.service.MemberService;
+import com.letmeclean.dto.member.request.MemberRequest.SignUpRequestDto;
+import com.letmeclean.model.member.Member;
+import com.letmeclean.model.member.MemberRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +20,7 @@ import javax.validation.ValidatorFactory;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.letmeclean.member.dto.MemberRequest.*;
+import static com.letmeclean.dto.member.request.MemberRequest.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
