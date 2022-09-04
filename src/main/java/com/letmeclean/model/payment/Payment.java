@@ -17,7 +17,7 @@ import javax.validation.constraints.Min;
 public class Payment extends AuditingFields {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
     private Long id;
 

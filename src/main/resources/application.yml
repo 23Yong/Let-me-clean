@@ -4,21 +4,23 @@ spring:
       on-profile: "real"
     import:
       - application-secret.yml
-      - application-kakao.yml
 
   datasource:
-    url: ${datasource.url}
-    username: ${datasource.username}
-    password: ${datasource.password}
-    driver-class-name: ${datasource.driver}
+    url: ${datasource.mysql.url}
+    username: ${datasource.mysql.username}
+    password: ${datasource.mysql.password}
+    driver-class-name: ${datasource.mysql.driver}
 
   jpa:
+    open-in-view: false
     show-sql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
+        default_batch_size: 100
+
   sql:
     init:
       mode: always
