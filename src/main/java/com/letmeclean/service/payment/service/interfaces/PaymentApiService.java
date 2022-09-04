@@ -1,8 +1,8 @@
 package com.letmeclean.service.payment.service.interfaces;
 
 import com.letmeclean.dto.payment.request.PaymentReadyRequest;
-import com.letmeclean.dto.payment.dto.PaymentApproveDto;
-import com.letmeclean.dto.payment.dto.PaymentReadyDto;
+import com.letmeclean.dto.payment.api.dto.PaymentApproveDto;
+import com.letmeclean.dto.payment.api.dto.PaymentReadyDto;
 
 public interface PaymentApiService {
 

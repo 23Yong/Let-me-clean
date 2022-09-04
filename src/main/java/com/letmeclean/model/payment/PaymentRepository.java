@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
-    @Query(value = "select new com.letmeclean.payment.dto.response.PaymentDetailResponse(m.email, p.totalPrice, p.quantity, t.name, p.paymentStatus, p.createdAt) " +
+    @Query(value = "select new com.letmeclean.dto.payment.response.PaymentDetailResponse(m.email, p.totalPrice, p.quantity, t.name, p.paymentStatus, p.createdAt) " +
             "from Payment p " +
             "join p.member m " +
             "join p.ticket t " +

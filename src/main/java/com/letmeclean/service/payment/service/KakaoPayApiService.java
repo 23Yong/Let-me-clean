@@ -1,6 +1,5 @@
 package com.letmeclean.service.payment.service;
 
-import com.letmeclean.dto.ticket.request.TicketRequest;
 import com.letmeclean.global.exception.ErrorCode;
 import com.letmeclean.global.redis.paymentcache.PaymentCache;
 import com.letmeclean.global.redis.paymentcache.RedisPaymentCacheRepository;
@@ -11,8 +10,8 @@ import com.letmeclean.dto.payment.api.request.KakaoPayReadyRequest;
 import com.letmeclean.dto.payment.api.response.KakaoPayApproveResponse;
 import com.letmeclean.dto.payment.api.response.KakaoPayReadyResponse;
 import com.letmeclean.dto.payment.request.PaymentReadyRequest;
-import com.letmeclean.dto.payment.dto.PaymentApproveDto;
-import com.letmeclean.dto.payment.dto.PaymentReadyDto;
+import com.letmeclean.dto.payment.api.dto.PaymentApproveDto;
+import com.letmeclean.dto.payment.api.dto.PaymentReadyDto;
 import com.letmeclean.service.payment.service.interfaces.PaymentApiService;
 import com.letmeclean.model.ticket.Ticket;
 import com.letmeclean.model.ticket.TicketRepository;

@@ -1,4 +1,4 @@
-package com.letmeclean.dto.payment.dto;
+package com.letmeclean.dto.payment.api.dto;
 
 import com.letmeclean.dto.payment.api.response.KakaoPayApproveResponse;
 import lombok.AllArgsConstructor;
