@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class IssuedTicket extends AuditingFields {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "issued_ticket_id")
     private Long id;
 

@@ -2,8 +2,8 @@ package com.letmeclean.controller;
 
 import com.letmeclean.global.aop.CurrentEmail;
 import com.letmeclean.dto.payment.request.PaymentReadyRequest;
-import com.letmeclean.dto.payment.dto.PaymentApproveDto;
-import com.letmeclean.dto.payment.dto.PaymentReadyDto;
+import com.letmeclean.dto.payment.api.dto.PaymentApproveDto;
+import com.letmeclean.dto.payment.api.dto.PaymentReadyDto;
 import com.letmeclean.service.payment.service.interfaces.PaymentApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
