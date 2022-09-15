@@ -1,6 +1,6 @@
 package com.letmeclean.ticket.service;
 
-import com.letmeclean.global.exception.AppException;
+import com.letmeclean.global.exception.LetMeCleanException;
 import com.letmeclean.model.ticket.Ticket;
 import com.letmeclean.model.ticket.TicketRepository;
 import com.letmeclean.service.TicketService;
@@ -58,7 +58,7 @@ class TicketServiceTest {
 
             // when, then
             assertThatThrownBy(() -> ticketService.register(ticketSaveRequestDto))
-                    .isInstanceOf(AppException.class);
+                    .isInstanceOf(LetMeCleanException.class);
         }
     }
 }

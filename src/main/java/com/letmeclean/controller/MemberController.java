@@ -1,5 +1,10 @@
 package com.letmeclean.controller;
 
+import com.letmeclean.dto.Response;
+import com.letmeclean.dto.member.request.MemberModifyRequest;
+import com.letmeclean.dto.member.request.PasswordModifyRequest;
+import com.letmeclean.dto.member.request.SignUpRequest;
+import com.letmeclean.dto.member.response.MemberResponse;
 import com.letmeclean.global.aop.CurrentEmail;
 import com.letmeclean.global.constants.ResponseConstants;
 import com.letmeclean.dto.issuedticket.response.IssuedTicketDetailResponse;
@@ -12,28 +17,27 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.letmeclean.dto.member.request.MemberRequest.*;
-
 @RequiredArgsConstructor
+@RequestMapping("/api/members")
 @RestController
 public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/members")
-    public ResponseEntity<Void> signUp(@RequestBody SignUpRequestDto signUpRequestDto) {
-        memberService.signUp(signUpRequestDto);
-        return ResponseConstants.CREATED;
+    @PostMapping
+    public Response<Void> signUp(@RequestBody SignUpRequest request) {
+        memberService.signUp(request.toDto());
+        return Response.success();
     }
 
     @GetMapping("/member-emails/{email}/exists")
-    public ResponseEntity<Boolean> checkEmailDuplicated(@PathVariable String email) {
-        return ResponseEntity.ok(memberService.checkEmailDuplicated(email));
+    public Response<Boolean> checkEmailDuplicated(@PathVariable String email) {
+        return Response.success(memberService.checkEmailDuplicated(email));
     }
 
     @GetMapping("/member-nicknames/{nickname}/exists")
-    public ResponseEntity<Boolean> checkNicknameDuplicated(@PathVariable String nickname) {
-        return ResponseEntity.ok(memberService.checkNicknameDuplicated(nickname));
+    public Response<Boolean> checkNicknameDuplicated(@PathVariable String nickname) {
+        return Response.success(memberService.checkNicknameDuplicated(nickname));
     }
 
     @GetMapping("/members/payments")
@@ -48,16 +52,15 @@ public class MemberController {
         return ResponseEntity.ok(issuedTickets);
     }
 
-    @PutMapping("/members/info")
-    public ResponseEntity<Void> editMemberInfo(@CurrentEmail String email, @RequestBody EditInfoRequestDto editInfoRequestDto) {
-        memberService.editMemberInfo(email, editInfoRequestDto);
-        return ResponseConstants.OK;
+    @PutMapping("/info")
+    public Response<MemberResponse> modifyMemberInfo(@CurrentEmail String email, @RequestBody MemberModifyRequest request) {
+        MemberResponse response = MemberResponse.fromMemberDto(memberService.modifyMemberInfo(request.toDto(email)));
+        return Response.success(response);
     }
 
-    @PutMapping("/members/password")
-    public ResponseEntity<Void> changePassword(@CurrentEmail String email, @RequestBody EditPasswordRequestDto editPasswordRequestDto) {
-        memberService.editPassword(email, editPasswordRequestDto);
-
-        return ResponseConstants.OK;
+    @PutMapping("/password")
+    public Response<MemberResponse> modifyPassword(@CurrentEmail String email, @RequestBody PasswordModifyRequest request) {
+        MemberResponse response = MemberResponse.fromMemberDto(memberService.modifyPassword(email, request.prevPassword(), request.newPassword()));
+        return Response.success(response);
     }
 }

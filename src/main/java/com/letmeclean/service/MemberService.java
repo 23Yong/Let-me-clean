@@ -1,13 +1,12 @@
 package com.letmeclean.service;
 
+import com.letmeclean.dto.member.MemberDto;
 import com.letmeclean.global.exception.ErrorCode;
+import com.letmeclean.global.exception.LetMeCleanException;
 import com.letmeclean.model.issuedticket.IssuedTicketRepository;
 import com.letmeclean.dto.issuedticket.response.IssuedTicketDetailResponse;
 import com.letmeclean.model.member.Member;
 import com.letmeclean.model.member.MemberRepository;
-import com.letmeclean.dto.member.request.MemberRequest.EditInfoRequestDto;
-import com.letmeclean.dto.member.request.MemberRequest.EditPasswordRequestDto;
-import com.letmeclean.dto.member.request.MemberRequest.SignUpRequestDto;
 import com.letmeclean.model.payment.PaymentRepository;
 import com.letmeclean.global.utils.MatcherUtil;
 import com.letmeclean.dto.payment.response.PaymentDetailResponse;
@@ -43,26 +42,30 @@ public class MemberService {
     }
 
     @Transactional
-    public void signUp(SignUpRequestDto signUpRequestDto) {
-        if (checkEmailDuplicated(signUpRequestDto.getEmail())) {
-            ErrorCode.throwDuplicateEmailConflict();
+    public void signUp(MemberDto memberDto) {
+        if (checkEmailDuplicated(memberDto.email())) {
+            throw new LetMeCleanException(
+                    ErrorCode.DUPLICATE_EMAIL_CONFLICT,
+                    String.format("%s 는(은) 이미 존재하는 이메일입니다.", memberDto.email())
+            );
         }
-        if (checkNicknameDuplicated(signUpRequestDto.getNickname())) {
-            ErrorCode.throwDuplicateNicknameConflict();
+        if (checkNicknameDuplicated(memberDto.nickname())) {
+            throw new LetMeCleanException(
+                    ErrorCode.DUPLICATE_NICKNAME_CONFLICT,
+                    String.format("%s 는(은) 이미 존재하는 닉네임입니다.", memberDto.nickname())
+            );
         }
-        if (!isValidPassword(signUpRequestDto.getPassword())) {
-            ErrorCode.throwInvalidPassword();
+        if (!isValidPassword(memberDto.password())) {
+            throw new LetMeCleanException(ErrorCode.INVALID_PASSWORD, String.format("해당 비밀번호 형식이 유효하지 않습니다."));
         }
 
-        signUpRequestDto.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
-
-        Member member = signUpRequestDto.toEntity();
+        Member member = memberDto.toEntity(passwordEncoder.encode(memberDto.password()));
         memberRepository.save(member);
     }
 
     public Member findMember(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(() -> ErrorCode.throwMemberNotFound());
+                .orElseThrow(() -> new LetMeCleanException(ErrorCode.MEMBER_NOT_FOUND, String.format("%s 를(을) 찾을 수 없습니다.", email)));
     }
 
     public List<PaymentDetailResponse> findPaymentList(String email, Pageable pageable) {
@@ -74,23 +77,24 @@ public class MemberService {
     }
 
     @Transactional
-    public void editMemberInfo(String email, EditInfoRequestDto editInfoRequestDto) {
-        Member member = findMember(email);
-        member.changeNickname(editInfoRequestDto.getNickname());
-        member.changeTel(editInfoRequestDto.getTel());
+    public MemberDto modifyMemberInfo(MemberDto memberDto) {
+        Member member = findMember(memberDto.email());
+        member.changeNickname(memberDto.nickname());
+        member.changeTel(memberDto.tel());
+
+        return MemberDto.fromEntity(member);
     }
 
     @Transactional
-    public void editPassword(String email, EditPasswordRequestDto editPasswordRequestDto) {
+    public MemberDto modifyPassword(String email, String prevPassword, String newPassword) {
         Member member = findMember(email);
-        String prevPassword = editPasswordRequestDto.getPrevPassword();
-        String newPassword = editPasswordRequestDto.getNewPassword();
         String encodedPassword = passwordEncoder.encode(prevPassword);
 
-        if (passwordEncoder.matches(prevPassword, encodedPassword)) {
-            member.changePassword(passwordEncoder.encode(newPassword));
-        } else {
-            ErrorCode.throwBadRequestPrevPassword();
+        if (!passwordEncoder.matches(prevPassword, encodedPassword)) {
+            throw new LetMeCleanException(ErrorCode.BAD_REQUEST_PREV_PASSWORD);
         }
+        member.changePassword(passwordEncoder.encode(newPassword));
+
+        return MemberDto.fromEntity(member);
     }
 }

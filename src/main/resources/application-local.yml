@@ -2,8 +2,7 @@ spring:
   config:
     activate:
       on-profile: "local"
-    import:
-      - application-secret.yml
+    import: application-secret.yml
 
   datasource:
     url: ${datasource.mysql.url}
