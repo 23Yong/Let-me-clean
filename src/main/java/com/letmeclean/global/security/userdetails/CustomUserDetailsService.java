@@ -1,5 +1,7 @@
 package com.letmeclean.global.security.userdetails;
 
+import com.letmeclean.global.exception.ErrorCode;
+import com.letmeclean.global.exception.LetMeCleanException;
 import com.letmeclean.global.security.roles.Role;
 import com.letmeclean.model.member.Member;
 import com.letmeclean.model.member.MemberRepository;
@@ -22,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username + " 을 데이터베이스에서 찾을 수 없습니다."));
+                .orElseThrow(() -> new LetMeCleanException(ErrorCode.MEMBER_NOT_FOUND, String.format("%s 를(을) 찾을 수 없습니다.", username)));
 
         return memberToUserDetails(member);
     }

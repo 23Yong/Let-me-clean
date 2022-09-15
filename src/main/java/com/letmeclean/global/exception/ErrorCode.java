@@ -27,63 +27,11 @@ public enum ErrorCode {
     /* 409 CONFLICT */
     DUPLICATE_EMAIL_CONFLICT(CONFLICT, "이미 해당 이메일 정보가 존재합니다."),
     DUPLICATE_NICKNAME_CONFLICT(CONFLICT, "이미 해당 닉네임 정보가 존재합니다."),
-    DUPLICATE_TICKET_CONFLICT(CONFLICT, "이미 존재하는 티켓입니다.");
+    DUPLICATE_TICKET_CONFLICT(CONFLICT, "이미 존재하는 티켓입니다."),
+
+    /* 500 INTERNAL SERVER ERROR */
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류입니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
-
-    /* 400 BAD_REQUEST */
-    public static AppException throwInvalidPassword() {
-        throw new AppException(INVALID_PASSWORD);
-    }
-
-    public static AppException throwInvalidToken() {
-        throw new AppException(INVALID_TOKEN);
-    }
-
-    public static AppException throwBadRequestPaymentReady() {
-        throw new AppException(BAD_REQUEST_PAYMENT_READY);
-    }
-
-    public static AppException throwBadRequestPaymentApprove() {
-        throw new AppException(BAD_REQUEST_PAYMENT_APPROVE);
-    }
-
-    public static AppException throwBadRequestPrevPassword() {
-        throw new AppException(BAD_REQUEST_PREV_PASSWORD);
-    }
-
-    public static AppException throwBadRequestCouponExpiredTime() {
-        throw new AppException(BAD_REQUEST_COUPON_EXPIRED_TIME);
-    }
-
-    /* 404 NOT_FOUND */
-    public static AppException throwMemberNotFound() {
-        throw new AppException(MEMBER_NOT_FOUND);
-    }
-
-    public static AppException throwTicketNotFound() {
-        throw new AppException(TICKET_NOT_FOUND);
-    }
-
-    public static AppException throwCouponNotFound() {
-        throw new AppException(COUPON_NOT_FOUND);
-    }
-
-    public static AppException throwIssuedCouponNotFound() {
-        throw new AppException(ISSUED_COUPON_NOT_FOUND);
-    }
-
-    /* 409 CONFLICT */
-    public static AppException throwDuplicateEmailConflict() {
-        throw new AppException(DUPLICATE_EMAIL_CONFLICT);
-    }
-
-    public static AppException throwDuplicateNicknameConflict() {
-        throw new AppException(DUPLICATE_NICKNAME_CONFLICT);
-    }
-
-    public static AppException throwDuplicateTicketConflict() {
-        throw new AppException(DUPLICATE_TICKET_CONFLICT);
-    }
 }

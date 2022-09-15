@@ -1,5 +1,6 @@
 package com.letmeclean.global.security.jwt;
 
+import com.letmeclean.global.exception.LetMeCleanException;
 import com.letmeclean.global.security.jwt.dto.TokenDto.TokenInfo;
 import com.letmeclean.global.exception.ErrorCode;
 import io.jsonwebtoken.*;
@@ -75,7 +76,7 @@ public class TokenProvider {
         Claims claims = parser.parseClaimsJws(jwt).getBody();
 
         if (claims.get(AUTHORITY_KEY) == null) {
-            ErrorCode.throwInvalidToken();
+            throw new LetMeCleanException(ErrorCode.INVALID_TOKEN);
         }
 
         List<? extends GrantedAuthority> authorities = Arrays.stream(

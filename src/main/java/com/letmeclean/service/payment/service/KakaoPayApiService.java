@@ -1,6 +1,7 @@
 package com.letmeclean.service.payment.service;
 
 import com.letmeclean.global.exception.ErrorCode;
+import com.letmeclean.global.exception.LetMeCleanException;
 import com.letmeclean.global.redis.paymentcache.PaymentCache;
 import com.letmeclean.global.redis.paymentcache.RedisPaymentCacheRepository;
 import com.letmeclean.api.KakaoPayProperties;
@@ -67,7 +68,9 @@ public class KakaoPayApiService implements PaymentApiService {
 
         paymentCacheRepository.findByEmail(email)
                 .ifPresentOrElse(
-                        p -> ErrorCode.throwBadRequestPaymentReady(),
+                        p -> {
+                            throw new LetMeCleanException(ErrorCode.BAD_REQUEST_PAYMENT_READY);
+                        },
                         () -> paymentCacheRepository.save(paymentCache)
                 );
 
@@ -78,7 +81,7 @@ public class KakaoPayApiService implements PaymentApiService {
     @Transactional
     public PaymentApproveDto approve(String email, String pgToken) {
         PaymentCache paymentCache = paymentCacheRepository.findByEmail(email)
-                .orElseThrow(() -> ErrorCode.throwBadRequestPaymentApprove());
+                .orElseThrow(() -> new LetMeCleanException(ErrorCode.BAD_REQUEST_PAYMENT_APPROVE));
 
         KakaoPayApproveRequest kakaoPayApproveRequest = new KakaoPayApproveRequest(
                 paymentCache.getTid(),

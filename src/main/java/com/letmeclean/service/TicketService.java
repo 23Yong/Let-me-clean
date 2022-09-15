@@ -1,6 +1,7 @@
 package com.letmeclean.service;
 
 import com.letmeclean.global.exception.ErrorCode;
+import com.letmeclean.global.exception.LetMeCleanException;
 import com.letmeclean.model.issuedticket.IssuedTicket;
 import com.letmeclean.model.issuedticket.IssuedTicketStatus;
 import com.letmeclean.model.member.Member;
@@ -31,13 +32,13 @@ public class TicketService {
 
     public Ticket findTicket(Long ticketId) {
         return ticketRepository.findById(ticketId)
-                .orElseThrow(() -> ErrorCode.throwTicketNotFound());
+                .orElseThrow(() -> new LetMeCleanException(ErrorCode.TICKET_NOT_FOUND, String.format("%s 을(를) 찾을 수 없습니다.")));
     }
 
     @Transactional
     public void register(TicketRequest.TicketSaveRequestDto ticketSaveRequestDto) {
         if (ticketRepository.existsByName(ticketSaveRequestDto.getName())) {
-            ErrorCode.throwDuplicateTicketConflict();
+            throw new LetMeCleanException(ErrorCode.DUPLICATE_TICKET_CONFLICT, String.format("%s 은(는) 이미 존재하는 이름입니다."));
         }
         Ticket ticket = ticketSaveRequestDto.toEntity();
 
