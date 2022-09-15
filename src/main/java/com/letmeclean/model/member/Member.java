@@ -65,6 +65,10 @@ public class Member extends AuditingFields {
         issuedTickets.add(issuedTicket);
     }
 
+    public static Member of(String email, String password, String username, String nickname, String tel) {
+        return new Member(email, password, username, nickname, tel);
+    }
+
     @Builder
     public Member(String email, String password, String name, String nickname, String tel) {
         this.email = email;

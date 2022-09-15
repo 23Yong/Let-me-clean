@@ -1,6 +1,7 @@
 package com.letmeclean.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.letmeclean.dto.member.request.LoginRequest;
 import com.letmeclean.global.security.jwt.LoginAuthenticationSuccessHandler;
 import com.letmeclean.global.utils.RequestWrapper;
 import com.letmeclean.global.security.jwt.LoginAuthenticationFailureHandler;
@@ -16,8 +17,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-import static com.letmeclean.dto.member.request.MemberRequest.*;
 
 @Component
 public class LoginAuthenticationProcessingFilter extends AbstractAuthenticationProcessingFilter {
@@ -41,9 +40,9 @@ public class LoginAuthenticationProcessingFilter extends AbstractAuthenticationP
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         RequestWrapper requestWrapper = new RequestWrapper(request);
-        LoginRequestDto loginRequestDto = objectMapper.readValue(requestWrapper.getReader(), LoginRequestDto.class);
+        LoginRequest loginRequest = objectMapper.readValue(requestWrapper.getReader(), LoginRequest.class);
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword());
+                new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password());
 
         return this.getAuthenticationManager().authenticate(authenticationToken);
     }
