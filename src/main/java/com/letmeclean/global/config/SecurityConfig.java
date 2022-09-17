@@ -49,7 +49,7 @@ public class SecurityConfig {
                             "/api/members", "/api/member-emails/**", "/api/member-nicknames/**").permitAll()
                     .antMatchers("/api/payments/**").hasRole("MEMBER")
                     .antMatchers("/api/members/**").hasRole("MEMBER")
-                    .antMatchers("/tickets").hasRole("ADMIN")
+                    .antMatchers("/api/tickets").hasRole("ADMIN")
                     .antMatchers("/coupons").hasRole("ADMIN")
                     .anyRequest().authenticated()
                 .and()
