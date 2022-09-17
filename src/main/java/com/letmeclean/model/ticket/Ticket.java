@@ -28,10 +28,13 @@ public class Ticket extends AuditingFields {
 
     private String description;
 
-    @Builder
-    public Ticket(String name, Integer price, String description) {
+    private Ticket(String name, Integer price, String description) {
         this.name = name;
         this.price = price;
         this.description = description;
+    }
+
+    public static Ticket of(String name, Integer price, String description) {
+        return new Ticket(name, price, description);
     }
 }

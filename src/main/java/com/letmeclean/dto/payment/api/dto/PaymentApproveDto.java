@@ -14,7 +14,7 @@ public class PaymentApproveDto {
     private final Integer quantity;
     private final Integer totalAmount;
 
-    public PaymentApproveDto(String email, KakaoPayApproveResponse kakaoPayApproveResponse) {
+    private PaymentApproveDto(String email, KakaoPayApproveResponse kakaoPayApproveResponse) {
         this(
                 email,
                 kakaoPayApproveResponse.getTid(),
@@ -22,5 +22,9 @@ public class PaymentApproveDto {
                 kakaoPayApproveResponse.getQuantity(),
                 kakaoPayApproveResponse.getTotalAmount()
         );
+    }
+
+    public static PaymentApproveDto of(String email, KakaoPayApproveResponse kakaoPayApproveResponse) {
+        return new PaymentApproveDto(email, kakaoPayApproveResponse);
     }
 }

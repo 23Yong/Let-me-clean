@@ -1,22 +1,21 @@
 package com.letmeclean.service;
 
+import com.letmeclean.dto.issuedticket.response.IssuedTicketResponse;
 import com.letmeclean.dto.member.MemberDto;
+import com.letmeclean.dto.payment.response.PaymentResponse;
 import com.letmeclean.global.exception.ErrorCode;
 import com.letmeclean.global.exception.LetMeCleanException;
 import com.letmeclean.model.issuedticket.IssuedTicketRepository;
-import com.letmeclean.dto.issuedticket.response.IssuedTicketDetailResponse;
 import com.letmeclean.model.member.Member;
 import com.letmeclean.model.member.MemberRepository;
 import com.letmeclean.model.payment.PaymentRepository;
 import com.letmeclean.global.utils.MatcherUtil;
-import com.letmeclean.dto.payment.response.PaymentDetailResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -68,12 +67,12 @@ public class MemberService {
                 .orElseThrow(() -> new LetMeCleanException(ErrorCode.MEMBER_NOT_FOUND, String.format("%s 를(을) 찾을 수 없습니다.", email)));
     }
 
-    public List<PaymentDetailResponse> findPaymentList(String email, Pageable pageable) {
-        return paymentRepository.findPaymentsByMemberEmail(email, pageable);
+    public Page<PaymentResponse> findPaymentList(String email, Pageable pageable) {
+        return paymentRepository.findPaymentsByMember_Email(email, pageable);
     }
 
-    public List<IssuedTicketDetailResponse> findIssuedTicketList(String email, Pageable pageable) {
-        return issuedTicketRepository.findIssuedTicketsByEmail(email, pageable);
+    public Page<IssuedTicketResponse> findIssuedTicketList(String email, Pageable pageable) {
+        return issuedTicketRepository.findIssuedTicketsByMember_Email(email, pageable);
     }
 
     @Transactional

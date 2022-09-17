@@ -31,11 +31,15 @@ public class PaymentCache {
 
     private String paymentNumber;
 
-    public PaymentCache(String email, String ticketName, String tid, Long ticketId, String paymentNumber) {
+    private PaymentCache(String email, String ticketName, String tid, Long ticketId, String paymentNumber) {
         this.email = email;
         this.ticketName = ticketName;
         this.tid = tid;
         this.ticketId = ticketId;
         this.paymentNumber = paymentNumber;
+    }
+
+    public static PaymentCache of(String email, String ticketName, String tid, Long ticketId, String paymentNumber) {
+        return new PaymentCache(email, ticketName, tid, ticketId, paymentNumber);
     }
 }

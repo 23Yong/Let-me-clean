@@ -1,10 +1,8 @@
 package com.letmeclean.dto.payment.request;
 
-import lombok.Getter;
+public record PaymentReadyRequest(
+        Long ticketId,
+        Integer ticketQuantity
+) {
 
-@Getter
-public class PaymentReadyRequest {
-
-    private Long ticketId;
-    private Integer ticketQuantity;
 }

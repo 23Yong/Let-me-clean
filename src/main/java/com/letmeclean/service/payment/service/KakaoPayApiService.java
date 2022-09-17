@@ -13,6 +13,9 @@ import com.letmeclean.dto.payment.api.response.KakaoPayReadyResponse;
 import com.letmeclean.dto.payment.request.PaymentReadyRequest;
 import com.letmeclean.dto.payment.api.dto.PaymentApproveDto;
 import com.letmeclean.dto.payment.api.dto.PaymentReadyDto;
+import com.letmeclean.model.issuedticket.IssuedTicketRepository;
+import com.letmeclean.model.member.Member;
+import com.letmeclean.model.member.MemberRepository;
 import com.letmeclean.service.payment.service.interfaces.PaymentApiService;
 import com.letmeclean.model.ticket.Ticket;
 import com.letmeclean.model.ticket.TicketRepository;
@@ -35,6 +38,7 @@ public class KakaoPayApiService implements PaymentApiService {
 
     private final TicketService ticketService;
 
+    private final MemberRepository memberRepository;
     private final TicketRepository ticketRepository;
     private final RedisPaymentCacheRepository paymentCacheRepository;
 
@@ -42,15 +46,18 @@ public class KakaoPayApiService implements PaymentApiService {
     @Transactional
     public PaymentReadyDto ready(String email, PaymentReadyRequest request) {
         String paymentNumber = UUID.randomUUID().toString();
-        Ticket ticket = ticketRepository.findById(request.getTicketId())
-                .orElseThrow(() -> new RuntimeException());
+        if (!memberRepository.existsByEmail(email)) {
+            throw new LetMeCleanException(ErrorCode.MEMBER_NOT_FOUND, String.format("%s 를(을) 찾을 수 없습니다.", email));
+        }
+        Ticket ticket = ticketRepository.findById(request.ticketId())
+                .orElseThrow(() -> new LetMeCleanException(ErrorCode.TICKET_NOT_FOUND, String.format("%s 를(을) 찾을 수 없습니다.", request.ticketId())));
 
-        KakaoPayReadyRequest kakaoPayReadyRequest = new KakaoPayReadyRequest(
+        KakaoPayReadyRequest kakaoPayReadyRequest = KakaoPayReadyRequest.of(
                 paymentNumber,
                 email,
                 ticket.getName(),
-                request.getTicketQuantity(),
-                ticket.getPrice() * request.getTicketQuantity(),
+                request.ticketQuantity(),
+                ticket.getPrice() * request.ticketQuantity(),
                 kakaoPayProperties.getApprovalUrl(),
                 kakaoPayProperties.getCancelUrl(),
                 kakaoPayProperties.getFailUrl()
@@ -58,7 +65,7 @@ public class KakaoPayApiService implements PaymentApiService {
 
         KakaoPayReadyResponse response = kakaoPayClient.ready(kakaoPayProperties.getAuthorization(), kakaoPayReadyRequest);
 
-        PaymentCache paymentCache = new PaymentCache(
+        PaymentCache paymentCache = PaymentCache.of(
                 email,
                 ticket.getName(),
                 response.getTid(),
@@ -97,6 +104,6 @@ public class KakaoPayApiService implements PaymentApiService {
 
         paymentCacheRepository.delete(paymentCache);
 
-        return new PaymentApproveDto(email, response);
+        return PaymentApproveDto.of(email, response);
     }
 }
