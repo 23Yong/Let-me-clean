@@ -66,9 +66,14 @@ public class KakaoPayReadyRequest {
     @NotNull
     private String failUrl;
 
-    public KakaoPayReadyRequest(String partnerOrderId, String partnerUserId,
-                                String itemName, Integer quantity, Integer totalAmount,
-                                String approvalUrl, String cancelUrl, String failUrl) {
+    private KakaoPayReadyRequest(String partnerOrderId,
+                                String partnerUserId,
+                                String itemName,
+                                Integer quantity,
+                                Integer totalAmount,
+                                String approvalUrl,
+                                String cancelUrl,
+                                String failUrl) {
         this.partnerOrderId = partnerOrderId;
         this.partnerUserId = partnerUserId;
         this.itemName = itemName;
@@ -77,5 +82,16 @@ public class KakaoPayReadyRequest {
         this.approvalUrl = approvalUrl;
         this.cancelUrl = cancelUrl;
         this.failUrl = failUrl;
+    }
+
+    public static KakaoPayReadyRequest of(String partnerOrderId,
+                                          String partnerUserId,
+                                          String itemName,
+                                          Integer quantity,
+                                          Integer totalAmount,
+                                          String approvalUrl,
+                                          String cancelUrl,
+                                          String failUrl) {
+        return new KakaoPayReadyRequest(partnerOrderId, partnerUserId, itemName, quantity, totalAmount, approvalUrl, cancelUrl, failUrl);
     }
 }

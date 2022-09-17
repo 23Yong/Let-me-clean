@@ -12,7 +12,7 @@ public class SecurityUtil {
     public static String getCurrentMemberEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getName() == null) {
-            throw new LetMeCleanException(ErrorCode.MEMBER_NOT_FOUND, String.format("%s 을(를) 찾을 수 없습니다."));
+            throw new LetMeCleanException(ErrorCode.MEMBER_NOT_FOUND, String.format("%s 을(를) 찾을 수 없습니다.", authentication.getName()));
         }
         return authentication.getName();
     }

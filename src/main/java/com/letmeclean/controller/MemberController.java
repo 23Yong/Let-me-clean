@@ -1,21 +1,18 @@
 package com.letmeclean.controller;
 
 import com.letmeclean.dto.Response;
+import com.letmeclean.dto.issuedticket.response.IssuedTicketResponse;
 import com.letmeclean.dto.member.request.MemberModifyRequest;
 import com.letmeclean.dto.member.request.PasswordModifyRequest;
 import com.letmeclean.dto.member.request.SignUpRequest;
 import com.letmeclean.dto.member.response.MemberResponse;
+import com.letmeclean.dto.payment.response.PaymentResponse;
 import com.letmeclean.global.aop.CurrentEmail;
-import com.letmeclean.global.constants.ResponseConstants;
-import com.letmeclean.dto.issuedticket.response.IssuedTicketDetailResponse;
 import com.letmeclean.service.MemberService;
-import com.letmeclean.dto.payment.response.PaymentDetailResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
@@ -30,26 +27,26 @@ public class MemberController {
         return Response.success();
     }
 
-    @GetMapping("/member-emails/{email}/exists")
+    @GetMapping("/{email}/exists")
     public Response<Boolean> checkEmailDuplicated(@PathVariable String email) {
         return Response.success(memberService.checkEmailDuplicated(email));
     }
 
-    @GetMapping("/member-nicknames/{nickname}/exists")
+    @GetMapping("/{nickname}/exists")
     public Response<Boolean> checkNicknameDuplicated(@PathVariable String nickname) {
         return Response.success(memberService.checkNicknameDuplicated(nickname));
     }
 
-    @GetMapping("/members/payments")
-    public ResponseEntity<List<PaymentDetailResponse>> getMemberOfPaymentList(@CurrentEmail String email, Pageable pageable) {
-        List<PaymentDetailResponse> payments = memberService.findPaymentList(email, pageable);
-        return ResponseEntity.ok(payments);
+    @GetMapping("/payments")
+    public Response<Page<PaymentResponse>> getMemberOfPaymentList(@CurrentEmail String email, Pageable pageable) {
+        Page<PaymentResponse> response = memberService.findPaymentList(email, pageable);
+        return Response.success(response);
     }
 
-    @GetMapping("/members/issued-tickets")
-    public ResponseEntity<List<IssuedTicketDetailResponse>> getMemberOfIssuedTicketList(@CurrentEmail String email, Pageable pageable) {
-        List<IssuedTicketDetailResponse> issuedTickets = memberService.findIssuedTicketList(email, pageable);
-        return ResponseEntity.ok(issuedTickets);
+    @GetMapping("/issued-tickets")
+    public Response<Page<IssuedTicketResponse>> getMemberOfIssuedTicketList(@CurrentEmail String email, Pageable pageable) {
+        Page<IssuedTicketResponse> response = memberService.findIssuedTicketList(email, pageable);
+        return Response.success(response);
     }
 
     @PutMapping("/info")
