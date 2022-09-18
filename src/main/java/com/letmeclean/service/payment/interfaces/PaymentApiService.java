@@ -1,4 +1,4 @@
-package com.letmeclean.service.payment.service.interfaces;
+package com.letmeclean.service.payment.interfaces;
 
 import com.letmeclean.dto.payment.request.PaymentReadyRequest;
 import com.letmeclean.dto.payment.api.dto.PaymentApproveDto;

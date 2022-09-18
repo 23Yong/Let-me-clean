@@ -5,7 +5,7 @@ import com.letmeclean.global.aop.CurrentEmail;
 import com.letmeclean.dto.payment.request.PaymentReadyRequest;
 import com.letmeclean.dto.payment.api.dto.PaymentApproveDto;
 import com.letmeclean.dto.payment.api.dto.PaymentReadyDto;
-import com.letmeclean.service.payment.service.interfaces.PaymentApiService;
+import com.letmeclean.service.payment.interfaces.PaymentApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
