@@ -31,8 +31,6 @@ class MemberServiceTest {
     @InjectMocks
     MemberService memberService;
 
-    Member member;
-
     @DisplayName("멤버가 회원가입을 시도하면")
     @Nested
     class MemberSignUpTest {
