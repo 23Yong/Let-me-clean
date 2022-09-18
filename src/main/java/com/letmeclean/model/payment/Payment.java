@@ -4,7 +4,6 @@ import com.letmeclean.model.AuditingFields;
 import com.letmeclean.model.member.Member;
 import com.letmeclean.model.ticket.Ticket;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -41,16 +40,15 @@ public class Payment extends AuditingFields {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
-    public void linkMember(Member member) {
-        this.member = member;
-    }
-
-    @Builder
-    public Payment(PaymentStatus paymentStatus, Integer totalPrice, Integer quantity, Member member, Ticket ticket) {
+    private Payment(PaymentStatus paymentStatus, Integer totalPrice, Integer quantity, Member member, Ticket ticket) {
         this.paymentStatus = paymentStatus;
         this.totalPrice = totalPrice;
         this.quantity = quantity;
         this.member = member;
         this.ticket = ticket;
+    }
+
+    public static Payment of(PaymentStatus paymentStatus, Integer totalPrice, Integer quantity, Member member, Ticket ticket) {
+        return new Payment(paymentStatus, totalPrice, quantity, member, ticket);
     }
 }

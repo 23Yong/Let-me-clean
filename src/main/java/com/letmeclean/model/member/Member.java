@@ -1,16 +1,11 @@
 package com.letmeclean.model.member;
 
 import com.letmeclean.model.AuditingFields;
-import com.letmeclean.model.issuedticket.IssuedTicket;
-import com.letmeclean.model.payment.Payment;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,12 +32,6 @@ public class Member extends AuditingFields {
     @Column(nullable = false, length = 50)
     private String tel;
 
-    @OneToMany(mappedBy = "member")
-    private List<Payment> payments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member")
-    private List<IssuedTicket> issuedTickets = new ArrayList<>();
-
     public void changeNickname(String nickname) {
         this.nickname = nickname;
     }
@@ -55,26 +44,15 @@ public class Member extends AuditingFields {
         this.password = newPassword;
     }
 
-    public void addPayment(Payment payment) {
-        payment.linkMember(this);
-        payments.add(payment);
-    }
-
-    public void addIssuedTicket(IssuedTicket issuedTicket) {
-        issuedTicket.linkMember(this);
-        issuedTickets.add(issuedTicket);
-    }
-
-    public static Member of(String email, String password, String username, String nickname, String tel) {
-        return new Member(email, password, username, nickname, tel);
-    }
-
-    @Builder
-    public Member(String email, String password, String name, String nickname, String tel) {
+    private Member(String email, String password, String name, String nickname, String tel) {
         this.email = email;
         this.password = password;
         this.username = name;
         this.nickname = nickname;
         this.tel = tel;
+    }
+
+    public static Member of(String email, String password, String username, String nickname, String tel) {
+        return new Member(email, password, username, nickname, tel);
     }
 }

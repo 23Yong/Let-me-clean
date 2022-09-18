@@ -4,7 +4,6 @@ import com.letmeclean.model.AuditingFields;
 import com.letmeclean.model.member.Member;
 import com.letmeclean.model.ticket.Ticket;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,14 +31,13 @@ public class IssuedTicket extends AuditingFields {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
-    public void linkMember(Member member) {
-        this.member = member;
-    }
-
-    @Builder
-    public IssuedTicket(IssuedTicketStatus issuedTicketStatus, Member member, Ticket ticket) {
+    private IssuedTicket(IssuedTicketStatus issuedTicketStatus, Member member, Ticket ticket) {
         this.issuedTicketStatus = issuedTicketStatus;
         this.member = member;
         this.ticket = ticket;
+    }
+
+    public static IssuedTicket of(IssuedTicketStatus issuedTicketStatus, Member member, Ticket ticket) {
+        return new IssuedTicket(issuedTicketStatus, member, ticket);
     }
 }

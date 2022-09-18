@@ -1,18 +1,19 @@
 package com.letmeclean.service;
 
 import com.letmeclean.dto.ticket.TicketDto;
+import com.letmeclean.dto.ticket.TicketSoldDto;
 import com.letmeclean.global.exception.ErrorCode;
 import com.letmeclean.global.exception.LetMeCleanException;
 import com.letmeclean.model.issuedticket.IssuedTicket;
+import com.letmeclean.model.issuedticket.IssuedTicketRepository;
 import com.letmeclean.model.issuedticket.IssuedTicketStatus;
 import com.letmeclean.model.member.Member;
+import com.letmeclean.model.member.MemberRepository;
 import com.letmeclean.model.payment.Payment;
+import com.letmeclean.model.payment.PaymentRepository;
 import com.letmeclean.model.payment.PaymentStatus;
-import com.letmeclean.service.payment.service.PaymentService;
 import com.letmeclean.model.ticket.Ticket;
 import com.letmeclean.model.ticket.TicketRepository;
-import com.letmeclean.dto.ticket.request.TicketRequest;
-import com.letmeclean.dto.ticket.request.TicketRequest.TicketSoldRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +26,10 @@ import java.util.List;
 @Service
 public class TicketService {
 
-    private final TicketIssueService ticketIssueService;
-    private final MemberService memberService;
-    private final PaymentService paymentService;
-
+    private final MemberRepository memberRepository;
     private final TicketRepository ticketRepository;
+    private final IssuedTicketRepository issuedTicketRepository;
+    private final PaymentRepository paymentRepository;
 
     public Ticket findTicket(Long ticketId) {
         return ticketRepository.findById(ticketId)
@@ -46,31 +46,23 @@ public class TicketService {
     }
 
     @Transactional
-    public void sold(TicketSoldRequestDto ticketSoldRequest) {
-        Member member = memberService.findMember(ticketSoldRequest.getEmail());
-        Ticket ticket = findTicket(ticketSoldRequest.getTicketId());
+    public void soldAllTickets(TicketSoldDto ticketSoldDto) {
+        Member member = memberRepository.findByEmail(ticketSoldDto.email())
+                .orElseThrow(() -> new LetMeCleanException(ErrorCode.MEMBER_NOT_FOUND, String.format("%s 을(를) 찾을 수 없습니다.", ticketSoldDto.email())));
+        Ticket ticket = findTicket(ticketSoldDto.ticketId());
 
+        issueAllPaidTickets(member, ticket, ticketSoldDto.quantity());
+
+        paymentRepository.save(Payment.of(PaymentStatus.TICKET_PAY_COMPLETED, ticketSoldDto.totalPrice(), ticketSoldDto.quantity(), member, ticket));
+    }
+
+    private void issueAllPaidTickets(Member member, Ticket ticket, Integer quantity) {
         List<IssuedTicket> issuedTickets = new ArrayList<>();
-        for (int i = 0; i < ticketSoldRequest.getQuantity(); i++) {
-            IssuedTicket issuedTicket = IssuedTicket.builder()
-                    .issuedTicketStatus(IssuedTicketStatus.TICKET_NOT_USED)
-                    .member(member)
-                    .ticket(ticket)
-                    .build();
-            issuedTickets.add(issuedTicket);
-            member.addIssuedTicket(issuedTicket);
+
+        for (int i = 0; i < quantity; i++) {
+            issuedTickets.add(IssuedTicket.of(IssuedTicketStatus.TICKET_NOT_USED, member, ticket));
         }
 
-        ticketIssueService.issueTickets(issuedTickets);
-
-        Payment payment = new Payment(
-                PaymentStatus.TICKET_PAY_COMPLETED,
-                ticketSoldRequest.getTotalPrice(),
-                ticketSoldRequest.getQuantity(),
-                member,
-                ticket
-        );
-        member.addPayment(payment);
-        paymentService.savePayment(payment);
+        issuedTicketRepository.saveAll(issuedTickets);
     }
 }
