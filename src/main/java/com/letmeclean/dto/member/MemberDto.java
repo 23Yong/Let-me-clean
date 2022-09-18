@@ -2,9 +2,6 @@ package com.letmeclean.dto.member;
 
 import com.letmeclean.model.member.Member;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 public record MemberDto(
         Long id,
         String email,
@@ -12,7 +9,7 @@ public record MemberDto(
         String username,
         String nickname,
         String tel
-) implements Serializable {
+) {
 
     public static MemberDto of(String email, String password, String username, String nickname, String tel) {
         return new MemberDto(
