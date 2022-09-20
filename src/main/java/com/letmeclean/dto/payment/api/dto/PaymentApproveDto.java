@@ -5,7 +5,7 @@ import com.letmeclean.dto.payment.api.response.KakaoPayApproveResponse;
 public record PaymentApproveDto(
         String email,
         String tid,
-        String movieTitle,
+        String ticketName,
         Integer quantity,
         Integer totalAmount
 ) {
