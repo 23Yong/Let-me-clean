@@ -1,6 +1,5 @@
 package com.letmeclean.global.config;
 
-import com.letmeclean.global.security.userdetails.CustomUserDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -21,7 +20,6 @@ public class JpaConfig {
                 .map(SecurityContext::getAuthentication)
                 .filter(Authentication::isAuthenticated)
                 .map(Authentication::getPrincipal)
-                .map(CustomUserDetails.class::cast)
-                .map(CustomUserDetails::getUsername);
+                .map(String::valueOf);
     }
 }
