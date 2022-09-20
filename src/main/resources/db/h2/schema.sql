@@ -1,1 +1,0 @@
-insert into member values (1, NOW(), '23Yong', '23Yong', NOW(), '23Yong@email.com', '23YongNickname', 'password', '010-1234-1234', 'JeongYong');

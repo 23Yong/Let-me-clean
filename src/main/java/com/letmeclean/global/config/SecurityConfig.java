@@ -50,10 +50,10 @@ public class SecurityConfig {
                     .antMatchers("/api/payments/**").hasRole("MEMBER")
                     .antMatchers("/api/members/**").hasRole("MEMBER")
                     .antMatchers("/api/tickets").hasRole("ADMIN")
-                    .antMatchers("/coupons").hasRole("ADMIN")
-                    .anyRequest().authenticated()
-                .and()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    .anyRequest().authenticated();
+
+        http
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http
                 .logout(logout -> logout
