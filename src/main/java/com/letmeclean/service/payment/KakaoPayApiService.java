@@ -39,7 +39,7 @@ public class KakaoPayApiService implements PaymentApiService {
     private final TicketRepository ticketRepository;
     private final RedisPaymentCacheRepository paymentCacheRepository;
 
-    private final String paymentNumber = UUID.randomUUID().toString();
+    private String paymentNumber;
 
     @Override
     @Transactional
@@ -50,6 +50,7 @@ public class KakaoPayApiService implements PaymentApiService {
         Ticket ticket = ticketRepository.findById(request.ticketId())
                 .orElseThrow(() -> new LetMeCleanException(ErrorCode.TICKET_NOT_FOUND, String.format("%s 를(을) 찾을 수 없습니다.", request.ticketId())));
 
+        paymentNumber = UUID.randomUUID().toString();
         KakaoPayReadyResponse response = getKakaoPayReadyResponseByRequest(request, email, ticket);
 
         savePaymentInfoInCache(email, ticket, response);
