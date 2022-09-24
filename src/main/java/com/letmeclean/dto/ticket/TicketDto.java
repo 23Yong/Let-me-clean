@@ -3,7 +3,6 @@ package com.letmeclean.dto.ticket;
 import com.letmeclean.model.ticket.Ticket;
 
 import javax.validation.constraints.Min;
-import java.io.Serializable;
 
 public record TicketDto(
         Long id,
