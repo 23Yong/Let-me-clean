@@ -31,6 +31,10 @@ public class IssuedTicket extends AuditingFields {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
+    public boolean isUsedTicket() {
+        return issuedTicketStatus.isUsedTicket();
+    }
+
     private IssuedTicket(IssuedTicketStatus issuedTicketStatus, Member member, Ticket ticket) {
         this.issuedTicketStatus = issuedTicketStatus;
         this.member = member;
