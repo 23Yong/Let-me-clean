@@ -1,0 +1,34 @@
+spring:
+  config:
+    activate:
+      on-profile: "local"
+    import: application-secret.yml
+
+  datasource:
+    url: ${datasource.mysql.url}
+    username: ${datasource.mysql.username}
+    password: ${datasource.mysql.password}
+    driver-class-name: ${datasource.mysql.driver}
+
+  jpa:
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_size: 100
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath*:db/${database}/schema.sql
+
+  redis:
+    host: ${redis.host}
+    port: ${redis.port}
+
+logging:
+  level:
+    org.springframework.web: debug
