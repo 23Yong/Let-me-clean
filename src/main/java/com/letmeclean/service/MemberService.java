@@ -1,10 +1,12 @@
 package com.letmeclean.service;
 
+import com.letmeclean.dto.issuedcoupon.IssuedCouponResponse;
 import com.letmeclean.dto.issuedticket.response.IssuedTicketResponse;
 import com.letmeclean.dto.member.MemberDto;
 import com.letmeclean.dto.payment.response.PaymentResponse;
 import com.letmeclean.global.exception.ErrorCode;
 import com.letmeclean.global.exception.LetMeCleanException;
+import com.letmeclean.model.isseudcoupon.IssuedCouponRepository;
 import com.letmeclean.model.issuedticket.IssuedTicketRepository;
 import com.letmeclean.model.member.Member;
 import com.letmeclean.model.member.MemberRepository;
@@ -25,6 +27,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PaymentRepository paymentRepository;
     private final IssuedTicketRepository issuedTicketRepository;
+    private final IssuedCouponRepository issuedCouponRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -95,5 +98,12 @@ public class MemberService {
         member.changePassword(passwordEncoder.encode(newPassword));
 
         return MemberDto.fromEntity(member);
+    }
+
+    public Page<IssuedCouponResponse> getHoldingCoupons(String email, Pageable pageable) {
+        if (!memberRepository.existsByEmail(email)) {
+            throw new LetMeCleanException(ErrorCode.MEMBER_NOT_FOUND, String.format("%s 를(을) 찾을 수 없습니다.", email));
+        }
+        return issuedCouponRepository.findIssuedCouponsByMember_Email(email, pageable);
     }
 }
