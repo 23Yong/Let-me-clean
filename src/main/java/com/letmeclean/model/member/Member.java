@@ -9,6 +9,9 @@ import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = {
+        @Index(columnList = "email", unique = true)
+})
 @Entity
 public class Member extends AuditingFields {
 

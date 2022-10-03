@@ -13,13 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -144,6 +147,39 @@ class MemberControllerTest {
                         put("/api/members/password")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsBytes(request))
+                )
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @WithMockUser(roles = "MEMBER", username = "23Yong@email.com")
+    @Test
+    void 보유쿠폰_조회_성공() throws Exception {
+        mockMvc.perform(
+                get("/api/members/coupons")
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @WithAnonymousUser
+    @Test
+    void 권한이_없어_보유쿠폰_조회_실패() throws Exception {
+        mockMvc.perform(
+                get("/api/members/coupons")
+                )
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @WithMockUser(roles = "MEMBER", username = "23Yong@email.com")
+    @Test
+    void 이메일을_찾을수없어_실패() throws Exception {
+        doThrow(new LetMeCleanException(ErrorCode.MEMBER_NOT_FOUND))
+                .when(memberService).getHoldingCoupons(eq("23Yong@email.com"), any(Pageable.class));
+
+        mockMvc.perform(
+                get("/api/members/coupons")
                 )
                 .andDo(print())
                 .andExpect(status().isNotFound());
