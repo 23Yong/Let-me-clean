@@ -1,6 +1,7 @@
 package com.letmeclean.model.payment;
 
 import com.letmeclean.model.AuditingFields;
+import com.letmeclean.model.isseudcoupon.IssuedCoupon;
 import com.letmeclean.model.member.Member;
 import com.letmeclean.model.ticket.Ticket;
 import lombok.AccessLevel;
@@ -39,6 +40,10 @@ public class Payment extends AuditingFields {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "issued_coupon_id")
+    private IssuedCoupon issuedCoupon;
 
     private Payment(PaymentStatus paymentStatus, Integer totalPrice, Integer quantity, Member member, Ticket ticket) {
         this.paymentStatus = paymentStatus;
