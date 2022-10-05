@@ -1,8 +1,11 @@
 package com.letmeclean.service;
 
+import com.letmeclean.dto.issuedcoupon.IssuedCouponResponse;
 import com.letmeclean.dto.member.MemberDto;
 import com.letmeclean.global.exception.ErrorCode;
 import com.letmeclean.global.exception.LetMeCleanException;
+import com.letmeclean.model.isseudcoupon.IssuedCouponRepository;
+import com.letmeclean.model.isseudcoupon.IssuedCouponStatus;
 import com.letmeclean.model.member.Member;
 import com.letmeclean.model.member.MemberRepository;
 import org.junit.jupiter.api.*;
@@ -10,9 +13,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,6 +30,8 @@ class MemberServiceTest {
 
     @Mock
     MemberRepository memberRepository;
+    @Mock
+    IssuedCouponRepository issuedCouponRepository;
 
     @Mock
     PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -175,6 +183,47 @@ class MemberServiceTest {
             assertThat(e.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
             then(memberRepository).should().findByEmail(email);
             then(passwordEncoder).shouldHaveNoInteractions();
+        }
+    }
+
+    @DisplayName("멤버가 보유한 쿠폰을 조회하면")
+    @Nested
+    class InquireHoldingCouponsTest {
+
+        @DisplayName("보유 쿠폰 조회에 성공한다.")
+        @Test
+        void 보유_쿠폰_조회_성공() {
+            // given
+            String email = "23Yong@email.com";
+            Pageable pageable = mock(Pageable.class);
+
+            given(memberRepository.existsByEmail(email)).willReturn(true);
+            given(issuedCouponRepository.findIssuedCouponsByMember_Email(email, pageable))
+                    .willReturn(Page.empty());
+
+            // when
+            memberService.getHoldingCoupons(email, pageable);
+
+            // then
+            then(issuedCouponRepository).should().findIssuedCouponsByMember_Email(email, pageable);
+        }
+
+        @DisplayName("보유 쿠폰 조회에 실패한다.")
+        @Test
+        void 이메일이_존재하지않아_보유_쿠폰_조회_실패() {
+            // given
+            String email = "23Yong@test.com";
+            Pageable pageable = mock(Pageable.class);
+
+            given(memberRepository.existsByEmail(email)).willReturn(eq(false));
+
+            // when & then
+            LetMeCleanException e = Assertions.assertThrows(LetMeCleanException.class, () -> memberService.getHoldingCoupons(email, pageable));
+
+            assertThat(e.getErrorCode()).isEqualTo(ErrorCode.MEMBER_NOT_FOUND);
+
+            then(memberRepository).should().existsByEmail(email);
+            then(issuedCouponRepository).shouldHaveNoInteractions();
         }
     }
 

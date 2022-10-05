@@ -1,6 +1,7 @@
 package com.letmeclean.controller;
 
 import com.letmeclean.dto.Response;
+import com.letmeclean.dto.issuedcoupon.IssuedCouponResponse;
 import com.letmeclean.dto.issuedticket.response.IssuedTicketResponse;
 import com.letmeclean.dto.member.request.MemberModifyRequest;
 import com.letmeclean.dto.member.request.PasswordModifyRequest;
@@ -12,6 +13,7 @@ import com.letmeclean.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -44,7 +46,7 @@ public class MemberController {
     }
 
     @GetMapping("/issued-tickets")
-    public Response<Page<IssuedTicketResponse>> getMemberOfIssuedTicketList(@CurrentEmail String email, Pageable pageable) {
+    public Response<Page<IssuedTicketResponse>> getMemberOfIssuedTicketList(@CurrentEmail String email, @PageableDefault(size = 10) Pageable pageable) {
         Page<IssuedTicketResponse> response = memberService.findIssuedTicketList(email, pageable);
         return Response.success(response);
     }
@@ -58,6 +60,12 @@ public class MemberController {
     @PutMapping("/password")
     public Response<MemberResponse> modifyPassword(@CurrentEmail String email, @RequestBody PasswordModifyRequest request) {
         MemberResponse response = MemberResponse.fromMemberDto(memberService.modifyPassword(email, request.prevPassword(), request.newPassword()));
+        return Response.success(response);
+    }
+
+    @GetMapping("/coupons")
+    public Response<Page<IssuedCouponResponse>> getHoldingCoupons(@CurrentEmail String email, @PageableDefault(size = 10) Pageable pageable) {
+        Page<IssuedCouponResponse> response = memberService.getHoldingCoupons(email, pageable);
         return Response.success(response);
     }
 }

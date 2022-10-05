@@ -14,6 +14,10 @@ import com.letmeclean.dto.payment.api.response.KakaoPayReadyResponse;
 import com.letmeclean.dto.payment.request.PaymentReadyRequest;
 import com.letmeclean.dto.payment.api.dto.PaymentApproveDto;
 import com.letmeclean.dto.payment.api.dto.PaymentReadyDto;
+import com.letmeclean.model.coupon.Coupon;
+import com.letmeclean.model.coupon.CouponRepository;
+import com.letmeclean.model.isseudcoupon.IssuedCoupon;
+import com.letmeclean.model.isseudcoupon.IssuedCouponRepository;
 import com.letmeclean.model.member.MemberRepository;
 import com.letmeclean.service.payment.interfaces.PaymentApiService;
 import com.letmeclean.model.ticket.Ticket;
@@ -37,6 +41,8 @@ public class KakaoPayApiService implements PaymentApiService {
 
     private final MemberRepository memberRepository;
     private final TicketRepository ticketRepository;
+    private final CouponRepository couponRepository;
+    private final IssuedCouponRepository issuedCouponRepository;
     private final RedisPaymentCacheRepository paymentCacheRepository;
 
     private String paymentNumber;
@@ -50,12 +56,17 @@ public class KakaoPayApiService implements PaymentApiService {
         Ticket ticket = ticketRepository.findById(request.ticketId())
                 .orElseThrow(() -> new LetMeCleanException(ErrorCode.TICKET_NOT_FOUND, String.format("%s 를(을) 찾을 수 없습니다.", request.ticketId())));
 
-        paymentNumber = UUID.randomUUID().toString();
-        KakaoPayReadyResponse response = getKakaoPayReadyResponseByRequest(request, email, ticket);
+        generatePaymentNumber();
 
-        savePaymentInfoInCache(email, ticket, response);
+        KakaoPayReadyResponse response = getKakaoPayReadyResponse(request, email, ticket);
+
+        savePaymentInfoInCache(email, ticket, request.issuedCouponId(), response);
 
         return PaymentReadyDto.kakaoToPaymentReadyDto(response);
+    }
+
+    private void generatePaymentNumber() {
+        paymentNumber = UUID.randomUUID().toString();
     }
 
     @Override
@@ -64,36 +75,44 @@ public class KakaoPayApiService implements PaymentApiService {
         PaymentCache paymentCache = paymentCacheRepository.findByEmail(email)
                 .orElseThrow(() -> new LetMeCleanException(ErrorCode.BAD_REQUEST_PAYMENT_APPROVE, String.format("%s 님의 요청한 구매 정보를 찾을 수 없습니다.", email)));
 
-        KakaoPayApproveResponse response = getKakaoPayApproveResponseByEmailAndPgToken(paymentCache, email, pgToken);
+        KakaoPayApproveResponse response = getKakaoPayApproveResponse(paymentCache, email, pgToken);
 
         ticketService.soldAllTickets(TicketSoldDto.of(email, response.getQuantity(), response.getTotalAmount(), paymentCache.getTicketId()));
 
-        paymentCacheRepository.delete(paymentCache);
+        useIssuedCoupon(paymentCache);
 
         return PaymentApproveDto.of(email, response);
     }
 
-    private KakaoPayReadyResponse getKakaoPayReadyResponseByRequest(PaymentReadyRequest request, String email, Ticket ticket) {
-        KakaoPayReadyRequest kakaoPayReadyRequest = KakaoPayReadyRequest.of(
-                paymentNumber,
-                email,
-                ticket.getName(),
-                request.ticketQuantity(),
-                ticket.getPrice() * request.ticketQuantity(),
-                kakaoPayProperties.getApprovalUrl(),
-                kakaoPayProperties.getCancelUrl(),
-                kakaoPayProperties.getFailUrl()
-        );
+    private void useIssuedCoupon(PaymentCache paymentCache) {
+        Long issuedCouponId = paymentCache.getIssuedCouponId();
+        if (issuedCouponId != null) {
+            IssuedCoupon issuedCoupon = issuedCouponRepository.findById(issuedCouponId)
+                    .orElseThrow(() -> new LetMeCleanException(ErrorCode.ISSUED_COUPON_NOT_FOUND, String.format("%s 를(을) 찾을 수 없습니다.", issuedCouponId)));
 
-        return kakaoPayClient.ready(kakaoPayProperties.getAuthorization(), kakaoPayReadyRequest);
+            issuedCoupon.useCoupon();
+        }
+        paymentCacheRepository.delete(paymentCache);
     }
 
-    private void savePaymentInfoInCache(String email, Ticket ticket, KakaoPayReadyResponse response) {
+    private int getTotalAmount(PaymentReadyRequest request, Ticket ticket) {
+        int totalAmount = ticket.getPrice() * request.ticketQuantity();
+        if (request.couponId() != null) {
+            Coupon coupon = couponRepository.findById(request.couponId())
+                    .orElseThrow(() -> new LetMeCleanException(ErrorCode.COUPON_NOT_FOUND, String.format("%s 를(을) 찾을 수 없습니다.", request.couponId())));
+
+            totalAmount = coupon.getDiscountType().getDiscountedPrice(totalAmount, coupon.getDiscountPrice());
+        }
+        return totalAmount;
+    }
+
+    private void savePaymentInfoInCache(String email, Ticket ticket, Long issuedCouponId, KakaoPayReadyResponse response) {
         PaymentCache paymentCache = PaymentCache.of(
                 email,
                 ticket.getName(),
                 response.getTid(),
                 ticket.getId(),
+                issuedCouponId,
                 paymentNumber
         );
 
@@ -104,7 +123,24 @@ public class KakaoPayApiService implements PaymentApiService {
                 );
     }
 
-    private KakaoPayApproveResponse getKakaoPayApproveResponseByEmailAndPgToken(PaymentCache paymentCache, String email, String pgToken) {
+    private KakaoPayReadyResponse getKakaoPayReadyResponse(PaymentReadyRequest request, String email, Ticket ticket) {
+        int totalAmount = getTotalAmount(request, ticket);
+
+        KakaoPayReadyRequest kakaoPayReadyRequest = KakaoPayReadyRequest.of(
+                paymentNumber,
+                email,
+                ticket.getName(),
+                request.ticketQuantity(),
+                totalAmount,
+                kakaoPayProperties.getApprovalUrl(),
+                kakaoPayProperties.getCancelUrl(),
+                kakaoPayProperties.getFailUrl()
+        );
+
+        return kakaoPayClient.ready(kakaoPayProperties.getAuthorization(), kakaoPayReadyRequest);
+    }
+
+    private KakaoPayApproveResponse getKakaoPayApproveResponse(PaymentCache paymentCache, String email, String pgToken) {
         KakaoPayApproveRequest request = KakaoPayApproveRequest.of(paymentCache.getTid(), paymentCache.getPaymentNumber(), email, pgToken);
         return kakaoPayClient.approve(kakaoPayProperties.getAuthorization(), request);
     }

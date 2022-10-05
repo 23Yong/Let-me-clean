@@ -23,6 +23,7 @@ public enum ErrorCode {
     TICKET_NOT_FOUND(NOT_FOUND, "해당 티켓 정보를 찾을 수 없습니다."),
     COUPON_NOT_FOUND(NOT_FOUND, "해당 쿠폰 정보를 찾을 수 없습니다."),
     ISSUED_TICKET_NOT_FOUND(NOT_FOUND, "해당 발급 티켓 정보를 찾을 수 없습니다."),
+    ISSUED_COUPON_NOT_FOUND(NOT_FOUND, "해당 발급 쿠폰 정보를 찾을 수 없습니다."),
 
     /* 409 CONFLICT */
     DUPLICATE_EMAIL_CONFLICT(CONFLICT, "이미 해당 이메일 정보가 존재합니다."),
