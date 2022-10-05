@@ -29,4 +29,18 @@ public class IssuedCoupon extends AuditingFields {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
+
+    public void useCoupon() {
+        this.issuedCouponStatus = IssuedCouponStatus.USED;
+    }
+
+    private IssuedCoupon(IssuedCouponStatus issuedCouponStatus, Member member, Coupon coupon) {
+        this.issuedCouponStatus = issuedCouponStatus;
+        this.member = member;
+        this.coupon = coupon;
+    }
+
+    public static IssuedCoupon of(IssuedCouponStatus issuedCouponStatus, Member member, Coupon coupon) {
+        return new IssuedCoupon(issuedCouponStatus, member, coupon);
+    }
 }

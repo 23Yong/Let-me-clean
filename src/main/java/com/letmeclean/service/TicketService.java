@@ -51,12 +51,12 @@ public class TicketService {
                 .orElseThrow(() -> new LetMeCleanException(ErrorCode.MEMBER_NOT_FOUND, String.format("%s 을(를) 찾을 수 없습니다.", ticketSoldDto.email())));
         Ticket ticket = findTicket(ticketSoldDto.ticketId());
 
-        issueAllPaidTickets(member, ticket, ticketSoldDto.quantity());
+        issueAllTickets(member, ticket, ticketSoldDto.quantity());
 
         paymentRepository.save(Payment.of(PaymentStatus.TICKET_PAY_COMPLETED, ticketSoldDto.totalPrice(), ticketSoldDto.quantity(), member, ticket));
     }
 
-    private void issueAllPaidTickets(Member member, Ticket ticket, Integer quantity) {
+    private void issueAllTickets(Member member, Ticket ticket, Integer quantity) {
         List<IssuedTicket> issuedTickets = new ArrayList<>();
 
         for (int i = 0; i < quantity; i++) {

@@ -29,17 +29,20 @@ public class PaymentCache {
 
     private Long ticketId;
 
+    private Long issuedCouponId;
+
     private String paymentNumber;
 
-    private PaymentCache(String email, String ticketName, String tid, Long ticketId, String paymentNumber) {
+    private PaymentCache(String email, String ticketName, String tid, Long ticketId, Long issuedCouponId, String paymentNumber) {
         this.email = email;
         this.ticketName = ticketName;
         this.tid = tid;
         this.ticketId = ticketId;
+        this.issuedCouponId = issuedCouponId;
         this.paymentNumber = paymentNumber;
     }
 
-    public static PaymentCache of(String email, String ticketName, String tid, Long ticketId, String paymentNumber) {
-        return new PaymentCache(email, ticketName, tid, ticketId, paymentNumber);
+    public static PaymentCache of(String email, String ticketName, String tid, Long ticketId, Long issuedCouponId, String paymentNumber) {
+        return new PaymentCache(email, ticketName, tid, ticketId, issuedCouponId, paymentNumber);
     }
 }

@@ -31,4 +31,15 @@ public class Coupon extends AuditingFields {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(nullable = false)
     private LocalDateTime expiredAt;
+
+    private Coupon(String couponName, DiscountType discountType, Integer discountPrice, LocalDateTime expiredAt) {
+        this.couponName = couponName;
+        this.discountType = discountType;
+        this.discountPrice = discountPrice;
+        this.expiredAt = expiredAt;
+    }
+
+    public static Coupon of(String couponName, DiscountType discountType, Integer discountPrice, LocalDateTime expiredAt) {
+        return new Coupon(couponName, discountType, discountPrice, expiredAt);
+    }
 }
