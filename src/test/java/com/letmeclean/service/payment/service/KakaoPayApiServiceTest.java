@@ -11,10 +11,16 @@ import com.letmeclean.dto.payment.api.response.CardInfo;
 import com.letmeclean.dto.payment.api.response.KakaoPayApproveResponse;
 import com.letmeclean.dto.payment.api.response.KakaoPayReadyResponse;
 import com.letmeclean.dto.payment.request.PaymentReadyRequest;
+import com.letmeclean.fixture.CouponEntityFixture;
 import com.letmeclean.fixture.MemberEntityFixture;
 import com.letmeclean.fixture.TicketEntityFixture;
 import com.letmeclean.global.redis.paymentcache.PaymentCache;
 import com.letmeclean.global.redis.paymentcache.RedisPaymentCacheRepository;
+import com.letmeclean.model.coupon.Coupon;
+import com.letmeclean.model.coupon.CouponRepository;
+import com.letmeclean.model.isseudcoupon.IssuedCoupon;
+import com.letmeclean.model.isseudcoupon.IssuedCouponRepository;
+import com.letmeclean.model.isseudcoupon.IssuedCouponStatus;
 import com.letmeclean.model.member.Member;
 import com.letmeclean.model.member.MemberRepository;
 import com.letmeclean.model.ticket.Ticket;
@@ -48,7 +54,13 @@ class KakaoPayApiServiceTest {
     @Mock
     TicketRepository ticketRepository;
     @Mock
+    CouponRepository couponRepository;
+    @Mock
+    IssuedCouponRepository issuedCouponRepository;
+    @Mock
     RedisPaymentCacheRepository redisPaymentCacheRepository;
+    @Mock
+    TicketService ticketService;
     @Mock
     KakaoPayProperties kakaoPayProperties;
 
@@ -57,9 +69,9 @@ class KakaoPayApiServiceTest {
 
     @DisplayName("카카오페이 서버로 단건결제준비 요청을 보내면 올바른 응답을 받는다.")
     @Test
-    void 카카오페이_결제준비() {
+    void 카카오페이_결제준비_쿠폰사용하지_않을때() {
         // given
-        PaymentReadyRequest paymentReadyRequest = new PaymentReadyRequest(1L, 4);
+        PaymentReadyRequest paymentReadyRequest = new PaymentReadyRequest(1L, 4, null, null);
         Member member = MemberEntityFixture.get();
         Ticket ticket = TicketEntityFixture.get();
 
@@ -88,18 +100,19 @@ class KakaoPayApiServiceTest {
 
         then(memberRepository).should().existsByEmail(member.getEmail());
         then(ticketRepository).should().findById(anyLong());
+        then(couponRepository).shouldHaveNoInteractions();
         then(redisPaymentCacheRepository).should().findByEmail(member.getEmail());
         then(redisPaymentCacheRepository).should().save(any(PaymentCache.class));
     }
 
     @DisplayName("카카오페이 서버로 단건결제승인 요청을 보내면 올바른 응답을 받는다.")
     @Test
-    void 카카오페이_결제승인() {
+    void 카카오페이_결제승인_쿠폰사용하지_않을때() {
         // given
         Member member = MemberEntityFixture.get();
         Ticket ticket = TicketEntityFixture.get();
         KakaoPayReadyResponse readyResponse = createReadyResponse();
-        PaymentCache paymentCache = PaymentCache.of(member.getEmail(), ticket.getName(), readyResponse.getTid(), 2L, "1111");
+        PaymentCache paymentCache = PaymentCache.of(member.getEmail(), ticket.getName(), readyResponse.getTid(), 2L, null, "1111");
         KakaoPayApproveResponse approveResponse = createApproveResponse();
 
         given(redisPaymentCacheRepository.findByEmail(member.getEmail())).willReturn(Optional.of(paymentCache));
@@ -110,10 +123,84 @@ class KakaoPayApiServiceTest {
         PaymentApproveDto actual = kakaoPayApiService.approve(member.getEmail(), "pgToken");
 
         // then
+        then(issuedCouponRepository).shouldHaveNoInteractions();
         then(redisPaymentCacheRepository).should().findByEmail(member.getEmail());
         then(kakaoPayClient).should().approve(anyString(), any(KakaoPayApproveRequest.class));
         then(redisPaymentCacheRepository).should().delete(paymentCache);
 
+        assertThat(actual.email()).isEqualTo(member.getEmail());
+        assertThat(actual.tid()).isEqualTo(approveResponse.getTid());
+        assertThat(actual.ticketName()).isEqualTo(approveResponse.getItemName());
+        assertThat(actual.quantity()).isEqualTo(3);
+    }
+
+    @DisplayName("카카오페이 서버로 쿠폰을 사용해 단건결제준비 요청을 보내면 올바른 응답을 받는다.")
+    @Test
+    void 카카오페이_결제준비_쿠폰사용() {
+        // given
+        PaymentReadyRequest paymentReadyRequest = new PaymentReadyRequest(1L, 4, 1L, 1L);
+        Member member = MemberEntityFixture.get();
+        Ticket ticket = TicketEntityFixture.get();
+        Coupon coupon = CouponEntityFixture.get();
+
+        KakaoPayReadyResponse response = createReadyResponse();
+
+        given(kakaoPayProperties.getApprovalUrl()).willReturn("");
+        given(kakaoPayProperties.getCancelUrl()).willReturn("");
+        given(kakaoPayProperties.getFailUrl()).willReturn("");
+        given(kakaoPayProperties.getAuthorization()).willReturn("KAKAO");
+
+        given(memberRepository.existsByEmail(member.getEmail())).willReturn(true);
+        given(ticketRepository.findById(anyLong())).willReturn(Optional.of(ticket));
+        given(couponRepository.findById(anyLong())).willReturn(Optional.of(coupon));
+        given(kakaoPayClient.ready(anyString(), any(KakaoPayReadyRequest.class))).willReturn(response);
+        given(redisPaymentCacheRepository.findByEmail(member.getEmail())).willReturn(Optional.empty());
+
+        // when
+        PaymentReadyDto actual = kakaoPayApiService.ready(member.getEmail(), paymentReadyRequest);
+
+        // then
+        assertThat(actual.tid()).isEqualTo(response.getTid());
+        assertThat(actual.nextRedirectAppUrl()).isEqualTo(response.getNextRedirectAppUrl());
+        assertThat(actual.nextRedirectMobileUrl()).isEqualTo(response.getNextRedirectMobileUrl());
+        assertThat(actual.nextRedirectPcUrl()).isEqualTo(response.getNextRedirectPcUrl());
+        assertThat(actual.androidAppScheme()).isEqualTo(response.getAndroidAppScheme());
+        assertThat(actual.iosAppScheme()).isEqualTo(response.getIosAppScheme());
+
+        then(memberRepository).should().existsByEmail(member.getEmail());
+        then(ticketRepository).should().findById(anyLong());
+        then(couponRepository).should().findById(anyLong());
+        then(redisPaymentCacheRepository).should().findByEmail(member.getEmail());
+        then(redisPaymentCacheRepository).should().save(any(PaymentCache.class));
+    }
+
+    @Test
+    void 카카오페이_결제승인_쿠폰사용() {
+        // given
+        Member member = MemberEntityFixture.get();
+        Ticket ticket = TicketEntityFixture.get();
+        Coupon coupon = CouponEntityFixture.get();
+        IssuedCoupon issuedCoupon = IssuedCoupon.of(IssuedCouponStatus.NOT_USED, member, coupon);
+
+        KakaoPayReadyResponse readyResponse = createReadyResponse();
+        PaymentCache paymentCache = PaymentCache.of(member.getEmail(), ticket.getName(), readyResponse.getTid(), 2L, 1L, "1111");
+        KakaoPayApproveResponse approveResponse = createApproveResponse();
+
+        given(issuedCouponRepository.findById(anyLong())).willReturn(Optional.of(issuedCoupon));
+        given(redisPaymentCacheRepository.findByEmail(member.getEmail())).willReturn(Optional.of(paymentCache));
+        given(kakaoPayProperties.getAuthorization()).willReturn("KAKAO");
+        given(kakaoPayClient.approve(anyString(), any(KakaoPayApproveRequest.class))).willReturn(approveResponse);
+
+        // when
+        PaymentApproveDto actual = kakaoPayApiService.approve(member.getEmail(), "pgToken");
+
+        // then
+        then(issuedCouponRepository).should().findById(anyLong());
+        then(redisPaymentCacheRepository).should().findByEmail(member.getEmail());
+        then(kakaoPayClient).should().approve(anyString(), any(KakaoPayApproveRequest.class));
+        then(redisPaymentCacheRepository).should().delete(paymentCache);
+
+        assertThat(issuedCoupon.getIssuedCouponStatus()).isEqualTo(IssuedCouponStatus.USED);
         assertThat(actual.email()).isEqualTo(member.getEmail());
         assertThat(actual.tid()).isEqualTo(approveResponse.getTid());
         assertThat(actual.ticketName()).isEqualTo(approveResponse.getItemName());
